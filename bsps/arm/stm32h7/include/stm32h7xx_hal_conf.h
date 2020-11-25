@@ -104,11 +104,11 @@
   */
 #if !defined  (HSE_VALUE) 
 #ifdef STM32H743ZI_NUCLEO
+// HSE for the STM32H743ZI Nucleo
 #define HSE_VALUE    ((uint32_t)8000000)
 #else
 #define HSE_VALUE    ((uint32_t)25000000) /*!< Value of the External oscillator in Hz : FPGA case fixed to 60MHZ */
 #endif
-// Correction for the STM32H743ZI Nucleo
 
 #endif /* HSE_VALUE */
 

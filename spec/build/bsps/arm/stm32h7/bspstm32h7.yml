@@ -227,6 +227,8 @@ links:
 - role: build-dependency
   uid: optmemsram1sz
 - role: build-dependency
+  uid: opth743nucleo
+- role: build-dependency
   uid: optmemsram2sz
 - role: build-dependency
   uid: optmemsram3sz

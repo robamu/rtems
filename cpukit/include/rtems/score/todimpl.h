@@ -2,8 +2,10 @@
  * @file
  *
  * @ingroup RTEMSScoreTOD
+ * @ingroup RTEMSScoreTODHooks
  *
- * @brief Time of Day Handler API
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreTOD and the @ref RTEMSScoreTODHooks.
  */
 
 /*
@@ -35,7 +37,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Time of Day Handler
+ * @brief This group contains the Time of Day Handler implementation.
  *
  * The following constants are related to the time of day and are
  * independent of RTEMS.
@@ -342,7 +344,8 @@ RTEMS_INLINE_ROUTINE bool _TOD_Is_set( void )
  *
  * @ingroup RTEMSScoreTOD
  *
- * @brief Time of Day Handler Action Hooks
+ * @brief This group contains the implementation to support Time of Day Handler
+ *   action hooks.
  *
  * The following support registering a hook which is invoked
  * when the TOD is set. These can be used by a paravirtualized

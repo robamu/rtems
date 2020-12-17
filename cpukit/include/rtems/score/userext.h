@@ -3,7 +3,9 @@
  *
  * @ingroup RTEMSScoreUserExt
  *
- * @brief User Extension Handler API
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreUserExt which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -27,15 +29,17 @@ extern "C" {
 struct _Thread_Control;
 
 /**
- * @defgroup RTEMSScoreUserExt User Extension Handler
+ * @defgroup RTEMSScoreUserExt User Extensions Handler
  *
  * @ingroup RTEMSScore
  *
- * @brief The User Extension Handler provides invocation of application
- * dependent routines at critical points in the life of each thread and the
- * system as a whole.
+ * @brief This group contains the User Extensions Handler implementation.
+ *
+ * This handler provides the invocation of application dependent routines at
+ * critical points in the life of each thread and the system as a whole.
+ *
+ * @{
  */
-/**@{**/
 
 /**
  * @brief Task create extension.

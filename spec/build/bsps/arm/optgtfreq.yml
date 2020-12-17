@@ -1,0 +1,16 @@
+SPDX-License-Identifier: CC-BY-SA-4.0 OR BSD-2-Clause
+actions:
+- get-integer: null
+- format-and-define: null
+build-type: option
+copyrights:
+- Copyright (C) 2020 embedded brains GmbH (http://www.embedded-brains.de)
+default: null
+default-by-variant: []
+description: |
+  Defines the frequency in Hz of the ARM Generic Timer.
+format: '{}'
+enabled-by: true
+links: []
+name: ARM_GENERIC_TIMER_FREQ
+type: build

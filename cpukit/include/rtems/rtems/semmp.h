@@ -1,10 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicSEM
+ * @ingroup RTEMSImplClassicSemaphoreMP
  *
- * This include file contains all the constants and structures associated
- * with the Multiprocessing Support in the Semaphore Manager.
+ * @brief This header file provides the implementation interfaces of the
+ *   @ref RTEMSImplClassicSemaphoreMP.
  */
 
 /* COPYRIGHT (c) 1989-2013.
@@ -27,14 +27,16 @@ extern "C" {
 #endif
 
 /**
- *  @defgroup ClassicSEM Semaphore MP Support
+ * @defgroup RTEMSImplClassicSemaphoreMP \
+ *   Semaphore Manager Multiprocessing (MP) Support
  *
- *  @ingroup ClassicMP
+ * @ingroup RTEMSImplClassicSemaphore
  *
- *  This encapsulates functionality related to the transparent multiprocessing
- *  support within the Classic API Semaphore Manager.
+ * @brief This group contains the implementation to support the Semaphore Manager
+ *   in multiprocessing (MP) configurations.
+ *
+ * @{
  */
-/**@{*/
 
 /**
  *  The following enumerated type defines the list of

@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreSysState
  *
- * @brief System State Handler API
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreSysState.
  */
 
 /*
@@ -29,7 +30,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Management of the internal system state of RTEMS.
+ * @brief This group contains the System State Handler implementation.
  *
  * @{
  */

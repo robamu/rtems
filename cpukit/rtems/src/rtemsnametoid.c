@@ -3,9 +3,10 @@
 /**
  * @file
  *
- * @ingroup ClassicObjectImpl
+ * @ingroup RTEMSImplClassicObject
  *
- * @brief _RTEMS_Name_to_id() Implementation
+ * @brief This source file contains the implementation of
+ *   _RTEMS_Name_to_id().
  */
 
 /*

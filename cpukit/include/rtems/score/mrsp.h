@@ -3,7 +3,9 @@
  *
  * @ingroup RTEMSScoreMRSP
  *
- * @brief Definitions for Multiprocessor Resource Sharing Protocol (MrsP).
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreMRSP which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -24,9 +26,6 @@
 #define _RTEMS_SCORE_MRSP_H
 
 #include <rtems/score/cpuopts.h>
-
-#if defined(RTEMS_SMP)
-
 #include <rtems/score/threadq.h>
 
 #ifdef __cplusplus
@@ -34,11 +33,12 @@ extern "C" {
 #endif /* __cplusplus */
 
 /**
- * @defgroup RTEMSScoreMRSP Multiprocessor Resource Sharing Protocol Handler
+ * @defgroup RTEMSScoreMRSP Multiprocessor Resource Sharing Protocol (MrsP)
  *
  * @ingroup RTEMSScore
  *
- * @brief Multiprocessor Resource Sharing Protocol (MrsP).
+ * @brief This group contains the implementation to support the Multiprocessor
+ *   Resource Sharing Protocol (MrsP) .
  *
  * The Multiprocessor Resource Sharing Protocol (MrsP) is defined in A.  Burns
  * and A.J.  Wellings, A Schedulability Compatible Multiprocessor Resource
@@ -55,6 +55,8 @@ extern "C" {
  *
  * @{
  */
+
+#if defined(RTEMS_SMP)
 
 /**
  * @brief MrsP control block.
@@ -76,12 +78,12 @@ typedef struct {
   Priority_Control ceiling_priorities[ RTEMS_ZERO_LENGTH_ARRAY ];
 } MRSP_Control;
 
+#endif /* RTEMS_SMP */
+
 /** @} */
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#endif /* RTEMS_SMP */
 
 #endif /* _RTEMS_SCORE_MRSP_H */

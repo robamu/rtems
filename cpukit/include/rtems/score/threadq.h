@@ -3,10 +3,9 @@
  *
  * @ingroup RTEMSScoreThreadQueue
  *
- * @brief Constants and Structures Needed to Declare a Thread Queue
- *
- * This include file contains all the constants and structures
- * needed to declare a thread queue.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreThreadQueue which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -42,7 +41,7 @@ struct Scheduler_Node;
  *
  * @ingroup RTEMSScore
  *
- * @brief Thread Queue Handler
+ * @brief This group contains the Thread Queue Handler implementation.
  *
  * This handler provides the capability to have threads block in
  * ordered sets. The sets may be ordered using the FIFO or priority

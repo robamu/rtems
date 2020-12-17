@@ -3,10 +3,9 @@
  *
  * @ingroup RTEMSScoreThread
  *
- * @brief Constants and Structures Related with the Thread Control Block
- *
- * This include file contains all constants and structures associated
- * with the thread control block.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreThread which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -62,7 +61,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Thread Handler
+ * @brief This group contains the Thread Handler implementation.
  *
  * This handler encapsulates functionality related to the management of
  * threads.  This includes the creation, deletion, and scheduling of threads.

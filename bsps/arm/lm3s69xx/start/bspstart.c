@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright © 2013 Eugeniy Meshcheryakov <eugen@debian.org>
+ * Copyright (c) 2013 Eugeniy Meshcheryakov <eugen@debian.org>
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -39,7 +39,7 @@ static void init_main_osc(void)
   syscon->rcc2 = rcc2;
 
   /*
-   As per a note in Stellaris® LM4F120H5QR Microcontroller Data
+   As per a note in Stellaris(R) LM4F120H5QR Microcontroller Data
    Sheet on page 219: "When transitioning the system clock
    configuration to use the MOSC as the fundamental clock source, the
    MOSCDIS bit must be set prior to reselecting the MOSC or an

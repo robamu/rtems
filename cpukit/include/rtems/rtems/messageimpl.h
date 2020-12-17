@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicMessageQueueImpl
+ * @ingroup RTEMSImplClassicMessage
  *
- * @brief Classic Message Queue Manager Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicMessage.
  */
 
 /*  COPYRIGHT (c) 1989-2008.
@@ -26,11 +27,13 @@ extern "C" {
 #endif
 
 /**
- *  @defgroup ClassicMessageQueueImpl Classic Message Queue Implementation
+ * @defgroup RTEMSImplClassicMessage Message Manager
  *
- *  @ingroup RTEMSImplClassic
+ * @ingroup RTEMSImplClassic
  *
- *  @{
+ * @brief This group contains the Message Manager implementation.
+ *
+ * @{
  */
 
 /**

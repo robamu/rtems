@@ -3,12 +3,9 @@
  *
  * @ingroup RTEMSScoreSemaphore
  *
- * @brief Data Associated with the Counting Semaphore Handler
- *
- * This include file contains all the constants and structures associated
- * with the Counting Semaphore Handler.  A counting semaphore is the
- * standard Dijkstra binary semaphore used to provide synchronization
- * and mutual exclusion capabilities.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreSemaphore which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -34,7 +31,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Semaphore Handler
+ * @brief This group contains the Semaphore Handler implementation.
  *
  * This handler encapsulates functionality which provides the foundation
  * Semaphore services used in all of the APIs supported by RTEMS.

@@ -3,10 +3,8 @@
  *
  * @ingroup RTEMSScoreScheduler
  *
- * @brief Inlined Routines Associated with the Manipulation of the Scheduler
- *
- * This inline file contains all of the inlined routines associated with
- * the manipulation of the scheduler.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreScheduler which are only used by the implementation.
  */
 
 /*
@@ -38,8 +36,10 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief This handler encapsulates functionality related to managing sets of
- *   threads that are ready for execution.
+ * @brief This group contains the Scheduler Handler implementation.
+ *
+ * This handler encapsulates functionality related to managing sets of threads
+ * that are ready for execution.
  *
  * Schedulers are used by the system to manage sets of threads that are ready
  * for execution.  A scheduler consists of

@@ -1,10 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicEventMP
+ * @ingroup RTEMSImplClassicEventMP
  *
- * This include file contains all the constants and structures associated
- * with the Multiprocessing Support in the Event Manager.
+ * @brief This header file provides the implementation interfaces of the
+ *   @ref RTEMSImplClassicEventMP.
  */
 
 /* COPYRIGHT (c) 1989-2013.
@@ -29,14 +29,18 @@ extern "C" {
 #endif
 
 /**
- *  @defgroup ClassicEventMP Event MP Support
+ * @defgroup RTEMSImplClassicEventMP Event Manager Multiprocessing (MP) Support
  *
- *  @ingroup ClassicMP
+ * @ingroup RTEMSImplClassicEvent
  *
- *  This encapsulates functionality related to the transparent multiprocessing
- *  support within the Classic API Event Manager.
+ * @brief This group contains the implementation to support the Event Manager
+ *   in multiprocessing (MP) configurations.
+ *
+ * This encapsulates functionality related to the transparent multiprocessing
+ * support within the Classic API Event Manager.
+ *
+ * @{
  */
-/**@{*/
 
 /*
  *  @brief Event_MP_Send_process_packet

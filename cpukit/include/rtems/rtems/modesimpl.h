@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicModesImpl
+ * @ingroup RTEMSImplClassicModes
  *
- * @brief Classic Modes Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicModes support.
  */
 
 /*  COPYRIGHT (c) 1989-2008.
@@ -25,9 +26,11 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicModesImpl Classic Modes Implementation
+ * @defgroup RTEMSImplClassicModes Task Modes
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the implementation to support task modes.
  *
  * @{
  */

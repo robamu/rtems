@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicSignalImpl
+ * @ingroup RTEMSImplClassicSignal
  *
- * @brief Signals Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicSignal.
  */
 
 /* COPYRIGHT (c) 1989-2008.
@@ -25,11 +26,14 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicSignalImpl Signals Implementation
+ * @defgroup RTEMSImplClassicSignal Signal Manager
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the Signal Manager implementation.
+ *
+ * @{
  */
-/**@{*/
 
 void _Signal_Action_handler(
   Thread_Control   *executing,

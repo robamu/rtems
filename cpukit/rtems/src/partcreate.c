@@ -1,10 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicPartImpl
+ * @ingroup RTEMSImplClassicPartition
  *
  * @brief This source file contains the implementation of
- *   rtems_partition_create().
+ *   rtems_partition_create() and the Partition Manager system initialization.
  */
 
 /*

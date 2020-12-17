@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreSMPBarrier
  *
- * @brief SMP Barrier API
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreSMPBarrier.
  */
 
 /*
@@ -35,8 +36,10 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief The SMP barrier provides barrier synchronization for SMP systems at
- * the lowest level.
+ * @brief This group contains the SMP barrier implementation.
+ *
+ * The SMP barrier provides barrier synchronization for SMP systems at the
+ * lowest level.
  *
  * The SMP barrier is implemented as a sense barrier, see also Herlihy and
  * Shavit, "The Art of Multiprocessor Programming", 17.3 Sense-Reversing

@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreObject
  *
- * @brief Set Objects Name
+ * @brief This source file contains the implementation of
+ *   _Objects_Set_name().
  */
 
 /*
@@ -24,7 +25,7 @@
 
 #include <string.h>
 
-bool _Objects_Set_name(
+Status_Control _Objects_Set_name(
   const Objects_Information *information,
   Objects_Control           *the_object,
   const char                *name
@@ -37,9 +38,10 @@ bool _Objects_Set_name(
     length = strnlen( name, information->name_length );
     dup = _Workspace_String_duplicate( name, length );
     if ( dup == NULL ) {
-      return false;
+      return STATUS_NO_MEMORY;
     }
 
+    _Workspace_Free( RTEMS_DECONST( char *, the_object->name.name_p ) );
     the_object->name.name_p = dup;
   } else {
     char c[ 4 ];
@@ -59,5 +61,5 @@ bool _Objects_Set_name(
       _Objects_Build_name( c[ 0 ], c[ 1 ], c[ 2 ], c[ 3 ] );
   }
 
-  return true;
+  return STATUS_SUCCESSFUL;
 }

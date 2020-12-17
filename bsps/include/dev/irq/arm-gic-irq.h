@@ -79,28 +79,17 @@ void bsp_interrupt_get_affinity(
   Processor_mask *affinity
 );
 
-typedef enum {
-  ARM_GIC_IRQ_SOFTWARE_IRQ_TO_ALL_IN_LIST,
-  ARM_GIC_IRQ_SOFTWARE_IRQ_TO_ALL_EXCEPT_SELF,
-  ARM_GIC_IRQ_SOFTWARE_IRQ_TO_SELF
-} arm_gic_irq_software_irq_target_filter;
-
-void arm_gic_trigger_sgi(
-  rtems_vector_number vector,
-  arm_gic_irq_software_irq_target_filter filter,
-  uint8_t targets
-);
+void arm_gic_trigger_sgi(rtems_vector_number vector, uint32_t targets);
 
 static inline rtems_status_code arm_gic_irq_generate_software_irq(
   rtems_vector_number vector,
-  arm_gic_irq_software_irq_target_filter filter,
-  uint8_t targets
+  uint32_t targets
 )
 {
   rtems_status_code sc = RTEMS_SUCCESSFUL;
 
   if (vector <= ARM_GIC_IRQ_SGI_15) {
-    arm_gic_trigger_sgi(vector, filter, targets);
+    arm_gic_trigger_sgi(vector, targets);
   } else {
     sc = RTEMS_INVALID_ID;
   }
@@ -121,18 +110,7 @@ void arm_interrupt_facility_set_exception_handler(void);
  */
 void arm_interrupt_handler_dispatch(rtems_vector_number vector);
 
-/**
- * This is the GICv3 interrupt dispatcher that is to be called from the
- * architecture-specific implementation of the IRQ handler.
- */
-void gicv3_interrupt_dispatch(void);
-
-static inline uint32_t arm_gic_irq_processor_count(void)
-{
-  volatile gic_dist *dist = ARM_GIC_DIST;
-
-  return GIC_DIST_ICDICTR_CPU_NUMBER_GET(dist->icdictr) + 1;
-}
+uint32_t arm_gic_irq_processor_count(void);
 
 void arm_gic_irq_initialize_secondary_cpu(void);
 

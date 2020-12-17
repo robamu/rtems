@@ -1,11 +1,10 @@
 /**
  * @file
  *
- * @ingroup SuperCoreTimeStamp
+ * @ingroup RTEMSScoreTimestamp
  *
- * @brief Helpers for Manipulating Timestamps
- *
- * This include file contains helpers for manipulating timestamps.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreTimestamp which are only used by the implementation.
  */
 
 /*
@@ -21,7 +20,7 @@
 #define _RTEMS_SCORE_TIMESTAMPIMPL_H
 
 /**
- * @addtogroup SuperCoreTimeStamp
+ * @addtogroup RTEMSScoreTimestamp
  *
  * @{
  */

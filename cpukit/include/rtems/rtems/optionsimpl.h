@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicOptionsImpl
+ * @ingroup RTEMSImplClassicOptions
  *
- * @brief Classic Options Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicOptions support.
  */
 
 /*  COPYRIGHT (c) 1989-2008.
@@ -24,9 +25,11 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicOptionsImpl Classic Options Implementation
+ * @defgroup RTEMSImplClassicOptions Directive Options
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the implementation to support directive options.
  *
  * @{
  */

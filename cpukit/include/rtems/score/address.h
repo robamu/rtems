@@ -3,10 +3,8 @@
  *
  * @ingroup RTEMSScoreAddress
  *
- * @brief Information Required to Manipulate Physical Addresses
- *
- * This include file contains the information required to manipulate
- * physical addresses.
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreAddress.
  */
 
 /*
@@ -32,7 +30,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Support for Address Manipulation
+ * @brief This group contains the Address Handler implementation.
  *
  * This handler encapsulates functionality which abstracts address
  * manipulation in a portable manner.

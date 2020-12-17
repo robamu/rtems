@@ -3,9 +3,10 @@
 /**
  * @file
  *
- * @ingroup ClassicObjectImpl
+ * @ingroup RTEMSImplClassicObject
  *
- * @brief Implementation Interfaces for Classic Objects
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicObject.
  */
 
 /*
@@ -44,9 +45,11 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicObjectImpl Classic Object Implementation
+ * @defgroup RTEMSImplClassicObject Object Services
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the Object Services implementation.
  *
  * @{
  */

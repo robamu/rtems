@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicTimerImpl
+ * @ingroup RTEMSImplClassicTimer
  *
- * @brief Classic Partition Manager Data Structures
+ * @brief This header file provides data structures used by the implementation
+ *   and the @ref RTEMSImplApplConfig to define ::_Timer_Information.
  */
 
 /*
@@ -29,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup ClassicTimerImpl
+ * @addtogroup RTEMSImplClassicTimer
  *
  * @{
  */

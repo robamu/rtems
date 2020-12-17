@@ -3,7 +3,9 @@
  *
  * @ingroup RTEMSScoreSchedulerPrioritySMP
  *
- * @brief Deterministic Priority SMP Scheduler API
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreSchedulerPrioritySMP which are used by the implementation
+ *   and the @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -36,7 +38,7 @@ extern "C" {
  *
  * @ingroup RTEMSScoreSchedulerSMP
  *
- * @brief Deterministic Priority SMP Scheduler
+ * @brief This group contains the Deterministic Priority SMP Scheduler implementation.
  *
  * This is an implementation of the global fixed priority scheduler (G-FP).  It
  * uses one ready chain per priority to ensure constant time insert operations.

@@ -3,10 +3,8 @@
  *
  * @ingroup RTEMSScoreRWLock
  *
- * @brief Inlined Routines Associated with the SuperCore RWLock
- *
- * This include file contains all of the inlined routines associated
- * with the SuperCore RWLock.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreRWLock which are only used by the implementation.
  */
 
 /*
@@ -28,13 +26,14 @@
 #include <rtems/score/watchdog.h>
 
 /**
- * @defgroup RTEMSScoreRWLock ScoreRWLock
- * 
+ * @defgroup RTEMSScoreRWLock Read-Write Lock
+ *
  * @ingroup RTEMSScore
- * 
- * @brief ScoreRWLock
+ *
+ * @brief This group contains the Read-Write Lock implementation.
+ *
+ * @{
  */
-/** @{ */
 
 #ifdef __cplusplus
 extern "C" {

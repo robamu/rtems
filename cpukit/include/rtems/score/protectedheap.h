@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreProtHeap
  *
- * @brief Protected Heap Handler API
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreProtHeap.
  */
 
 /*
@@ -30,7 +31,7 @@ extern "C" {
  *
  * @ingroup RTEMSScoreHeap
  *
- * @brief Provides protected heap services.
+ * @brief This group contains the Protected Heap Handler implementation.
  *
  * The @ref ScoreAllocatorMutex is used to protect the heap accesses.
  *

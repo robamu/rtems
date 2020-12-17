@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreSMPLock
  *
- * @brief SMP Lock API
+ * @brief This header file provides the main interfaces of the
+ *   @ref RTEMSScoreSMPLock.
  */
 
 /*
@@ -27,8 +28,9 @@
  *
  * @ingroup RTEMSScore
  *
- * @brief The SMP lock provides mutual exclusion for SMP systems at the lowest
- * level.
+ * @brief This group contains the SMP lock implementation.
+ *
+ * The SMP lock provides mutual exclusion in SMP systems at the lowest level.
  *
  * The SMP lock is implemented as a ticket lock.  This provides fairness in
  * case of concurrent lock attempts.

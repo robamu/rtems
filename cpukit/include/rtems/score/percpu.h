@@ -1,8 +1,10 @@
 /**
- *  @file
+ * @file
  *
- *  This include file defines the per CPU information required
- *  by RTEMS.
+ * @ingroup RTEMSScorePerCPU
+ *
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScorePerCPU.
  */
 
 /*
@@ -78,14 +80,16 @@ struct _Thread_Control;
 struct Scheduler_Context;
 
 /**
- *  @defgroup PerCPU RTEMS Per CPU Information
+ * @defgroup RTEMSScorePerCPU Per-CPU Information
  *
- *  @ingroup RTEMSScore
+ * @ingroup RTEMSScore
  *
- *  This defines the per CPU state information required by RTEMS
- *  and the BSP.  In an SMP configuration, there will be multiple
- *  instances of this data structure -- one per CPU -- and the
- *  current CPU number will be used as the index.
+ * @brief This group contains the implementation of the per-CPU information.
+ *
+ * The per-CPU information encapsulates state which is maintained for each
+ * configured processor in the system.  There will be one instance of a
+ * ::Per_CPU_Control in the ::_Per_CPU_Information table for each configured
+ * processor in the system.
  */
 
 /**@{*/
@@ -617,7 +621,7 @@ typedef struct {
  *
  *  This is an array of per CPU core information.
  */
-extern Per_CPU_Control_envelope _Per_CPU_Information[] CPU_STRUCTURE_ALIGNMENT;
+extern CPU_STRUCTURE_ALIGNMENT Per_CPU_Control_envelope _Per_CPU_Information[];
 
 #define _Per_CPU_Acquire( cpu, lock_context ) \
   _ISR_lock_Acquire( &( cpu )->Lock, lock_context )

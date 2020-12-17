@@ -3,9 +3,10 @@
 /**
  * @file
  *
- * @ingroup RTEMSApplicationConfiguration
+ * @ingroup RTEMSImplApplConfig
  *
- * @brief Evaluate Workspace Configuration Options
+ * @brief This header file evaluates configuration options related to the RTEMS
+ *   Workspace configuration.
  */
 
 /*
@@ -137,7 +138,15 @@ const uintptr_t _Stack_Space_size = _CONFIGURE_STACK_SPACE_SIZE;
 
 #if defined(CONFIGURE_TASK_STACK_ALLOCATOR) \
   && defined(CONFIGURE_TASK_STACK_DEALLOCATOR)
-  /* Ignore potential warnings from the static assertions below */
+  /*
+   * Ignore the following warnings from g++ and clang in the uses of
+   * _CONFIGURE_ASSERT_NOT_NULL() below:
+   *
+   * warning: the address of 'f()' will never be NULL [-Waddress]
+   *
+   * warning: comparison of function 'f' not equal to a null pointer is always
+   * true [-Wtautological-pointer-compare]
+   */
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Waddress"
   #pragma GCC diagnostic ignored "-Wpragmas"
@@ -150,13 +159,11 @@ const uintptr_t _Stack_Space_size = _CONFIGURE_STACK_SPACE_SIZE;
   #endif
 
   #ifdef CONFIGURE_TASK_STACK_ALLOCATOR_INIT
-    RTEMS_STATIC_ASSERT(
-      CONFIGURE_TASK_STACK_ALLOCATOR_INIT != NULL,
-      CONFIGURE_TASK_STACK_ALLOCATOR_INIT_MUST_NOT_BE_NULL
-    );
-
     const Stack_Allocator_initialize _Stack_Allocator_initialize =
-      CONFIGURE_TASK_STACK_ALLOCATOR_INIT;
+      _CONFIGURE_ASSERT_NOT_NULL(
+        Stack_Allocator_initialize,
+        CONFIGURE_TASK_STACK_ALLOCATOR_INIT
+      );
 
     RTEMS_SYSINIT_ITEM(
       _Stack_Allocator_do_initialize,
@@ -165,21 +172,17 @@ const uintptr_t _Stack_Space_size = _CONFIGURE_STACK_SPACE_SIZE;
     );
   #endif
 
-  RTEMS_STATIC_ASSERT(
-    CONFIGURE_TASK_STACK_ALLOCATOR != NULL,
-    CONFIGURE_TASK_STACK_ALLOCATOR_MUST_NOT_BE_NULL
-  );
-
   const Stack_Allocator_allocate _Stack_Allocator_allocate =
-    CONFIGURE_TASK_STACK_ALLOCATOR;
-
-  RTEMS_STATIC_ASSERT(
-    CONFIGURE_TASK_STACK_DEALLOCATOR != NULL,
-    CONFIGURE_TASK_STACK_DEALLOCATOR_MUST_NOT_BE_NULL
-  );
+    _CONFIGURE_ASSERT_NOT_NULL(
+      Stack_Allocator_allocate,
+      CONFIGURE_TASK_STACK_ALLOCATOR
+    );
 
   const Stack_Allocator_free _Stack_Allocator_free =
-    CONFIGURE_TASK_STACK_DEALLOCATOR;
+    _CONFIGURE_ASSERT_NOT_NULL(
+      Stack_Allocator_free,
+      CONFIGURE_TASK_STACK_DEALLOCATOR
+    );
 
   #pragma GCC diagnostic pop
 #elif defined(CONFIGURE_TASK_STACK_ALLOCATOR) \

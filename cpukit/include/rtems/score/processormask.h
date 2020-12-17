@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @brief Processor Mask API
- *
  * @ingroup RTEMSScoreProcessorMask
+ *
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreProcessorMask.
  */
 
 /*
@@ -38,7 +39,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Processor Mask
+ * @brief This group contains the implementation to support processor masks.
  *
  * The processor mask provides a bit map large enough to provide one bit for
  * each processor in the system.  It is a fixed size internal data type

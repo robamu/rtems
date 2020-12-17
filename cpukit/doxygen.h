@@ -1,12 +1,4 @@
 /**
- * @defgroup RTEMSImplClassic Classic
- * 
- * @ingroup RTEMSImpl
- *
- * @brief Classic
- */
-
-/**
  * @defgroup RTEMSAPIIO IO
  *
  * @ingroup RTEMSAPI
@@ -44,22 +36,6 @@
  * @ingroup RTEMSDeviceDrivers
  *
  * @brief Time Test 27 Support
- */
-
-/**
- * @defgroup libfs libfs
- * 
- * @ingroup FileSystemTypesAndMount
- * 
- * @brief libfs
- */
-
-/**
- * @defgroup nfsclient nfs Client
- * 
- * @ingroup FileSystemTypesAndMount
- * 
- * @brief nfs Client
  */
 
 /**

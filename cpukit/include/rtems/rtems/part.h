@@ -3,7 +3,7 @@
 /**
  * @file
  *
- * @ingroup RTEMSAPIClassicPart
+ * @ingroup RTEMSImplClassicPartition
  *
  * @brief This header file provides the Partition Manager API.
  */
@@ -97,9 +97,9 @@ extern "C" {
  * This directive creates a partition of fixed size buffers from a physically
  * contiguous memory space which starts at ``starting_address`` and is
  * ``length`` bytes in size.  Each allocated buffer is to be of ``buffer_size``
- * in bytes.  The assigned partition identifier is returned in ``id``.  This
- * partition identifier is used to access the partition with other partition
- * related directives.
+ * in bytes.  The assigned object identifier is returned in ``id``.  This
+ * identifier is used to access the partition with other partition related
+ * directives.
  *
  * The **attribute set** specified in ``attribute_set`` is built through a
  * *bitwise or* of the attribute constants described below.  Attributes not
@@ -161,9 +161,9 @@ extern "C" {
  *
  * @param attribute_set is the attribute set of the partition.
  *
- * @param id is the pointer to an object identifier variable.  The identifier
- *   of the created partition object will be stored in this variable, in case
- *   of a successful operation.
+ * @param[out] id is the pointer to an object identifier variable.  The
+ *   identifier of the created partition object will be stored in this
+ *   variable, in case of a successful operation.
  *
  * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
  *
@@ -247,9 +247,9 @@ rtems_status_code rtems_partition_create(
  *
  * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
  *
- * @retval ::RTEMS_INVALID_ADDRESS The id parameter was NULL.
+ * @retval ::RTEMS_INVALID_ADDRESS The ``id`` parameter was NULL.
  *
- * @retval ::RTEMS_INVALID_NAME The name parameter was 0.
+ * @retval ::RTEMS_INVALID_NAME The ``name`` parameter was 0.
  *
  * @retval ::RTEMS_INVALID_NAME There was no object with the specified name on
  *   the specified nodes.
@@ -270,12 +270,13 @@ rtems_status_code rtems_partition_ident(
  *
  * @brief Deletes the partition.
  *
- * This directive deletes the partition specified by the id parameter.  The
- * partition cannot be deleted if any of its buffers are still allocated.  The
- * PTCB for the deleted partition is reclaimed by RTEMS.
+ * This directive deletes the partition specified by the ``id`` parameter.  The
+ * partition cannot be deleted if any of its buffers are still allocated.
  *
  * This directive may cause the calling task to be preempted due to an obtain
  * and release of the object allocator mutex.
+ *
+ * The PTCB for the deleted partition is reclaimed by RTEMS.
  *
  * The calling task does not have to be the task that created the partition.
  * Any local task that knows the partition identifier can delete the partition.
@@ -291,8 +292,8 @@ rtems_status_code rtems_partition_ident(
  *
  * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
  *
- * @retval ::RTEMS_INVALID_ID There was no partition with the specified
- *   identifier.
+ * @retval ::RTEMS_INVALID_ID There was no partition associated with the
+ *   identifier specified by ``id``.
  *
  * @retval ::RTEMS_ILLEGAL_ON_REMOTE_OBJECT The partition resided on a remote
  *   node.
@@ -332,8 +333,8 @@ rtems_status_code rtems_partition_delete( rtems_id id );
  *
  * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
  *
- * @retval ::RTEMS_INVALID_ID There was no partition with the specified
- *   identifier.
+ * @retval ::RTEMS_INVALID_ID There was no partition associated with the
+ *   identifier specified by ``id``.
  *
  * @retval ::RTEMS_INVALID_ADDRESS The ``buffer`` parameter was NULL.
  *
@@ -367,8 +368,8 @@ rtems_status_code rtems_partition_get_buffer( rtems_id id, void **buffer );
  *
  * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
  *
- * @retval ::RTEMS_INVALID_ID There was no partition with the specified
- *   identifier.
+ * @retval ::RTEMS_INVALID_ID There was no partition associated with the
+ *   identifier specified by ``id``.
  *
  * @retval ::RTEMS_INVALID_ADDRESS The buffer referenced by ``buffer`` was not
  *   in the partition.

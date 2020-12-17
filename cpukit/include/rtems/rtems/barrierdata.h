@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicBarrierImpl
+ * @ingroup RTEMSImplClassicBarrier
  *
- * @brief Classic Barrier Manager Data Structures
+ * @brief This header file provides data structures used by the implementation
+ *   and the @ref RTEMSImplApplConfig to define ::_Barrier_Information.
  */
 
 
@@ -27,7 +28,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup ClassicBarrierImpl
+ * @addtogroup RTEMSImplClassicBarrier
  *
  * @{
  */

@@ -3,10 +3,8 @@
  *
  * @ingroup RTEMSScoreIntErr
  *
- * @brief Constants and Prototypes Related to the Internal Error Handler
- *
- * This include file contains constants and prototypes related
- * to the Internal Error Handler.
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreIntErr.
  */
 
 /*
@@ -28,10 +26,9 @@
  *
  * @ingroup RTEMSScore
  *
- * @brief Internal Error Handler
+ * @brief This group contains the Internal Error Handler implementation.
  *
- * This handler encapsulates functionality which provides the foundation
- * Semaphore services used in all of the APIs supported by RTEMS.
+ * This handler encapsulates functionality to terminate the system.
  *
  * @{
  */
@@ -189,7 +186,7 @@ typedef enum {
   INTERNAL_ERROR_NO_MEMORY_FOR_HEAP = 23,
   INTERNAL_ERROR_CPU_ISR_INSTALL_VECTOR = 24,
   INTERNAL_ERROR_RESOURCE_IN_USE = 25,
-  INTERNAL_ERROR_RTEMS_INIT_TASK_ENTRY_IS_NULL = 26,
+  /* INTERNAL_ERROR_RTEMS_INIT_TASK_ENTRY_IS_NULL = 26, */
   /* INTERNAL_ERROR_POSIX_INIT_THREAD_ENTRY_IS_NULL = 27, */
   INTERNAL_ERROR_THREAD_QUEUE_DEADLOCK = 28,
   INTERNAL_ERROR_THREAD_QUEUE_ENQUEUE_STICKY_FROM_BAD_STATE = 29,
@@ -204,7 +201,8 @@ typedef enum {
   INTERNAL_ERROR_ILLEGAL_USE_OF_FLOATING_POINT_UNIT = 38,
   INTERNAL_ERROR_ARC4RANDOM_GETENTROPY_FAIL = 39,
   INTERNAL_ERROR_NO_MEMORY_FOR_PER_CPU_DATA = 40,
-  INTERNAL_ERROR_TOO_LARGE_TLS_SIZE = 41
+  INTERNAL_ERROR_TOO_LARGE_TLS_SIZE = 41,
+  INTERNAL_ERROR_RTEMS_INIT_TASK_CONSTRUCT_FAILED = 42,
 } Internal_errors_Core_list;
 
 typedef CPU_Uint32ptr Internal_errors_t;

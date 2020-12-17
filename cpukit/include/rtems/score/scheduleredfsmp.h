@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @brief EDF SMP Scheduler API
- *
  * @ingroup RTEMSScoreSchedulerSMPEDF
+ *
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreSchedulerSMPEDF.
  */
 
 /*
@@ -26,11 +27,12 @@ extern "C" {
 #endif
 
 /**
- * @defgroup RTEMSScoreSchedulerSMPEDF EDF Priority SMP Scheduler
+ * @defgroup RTEMSScoreSchedulerSMPEDF Earliest Deadline First (EDF) Priority SMP Scheduler
  *
  * @ingroup RTEMSScoreSchedulerSMP
  *
- * @brief EDF Priority SMP Scheduler
+ * @brief This group contains the Earliest Deadline First (EDF) Priority SMP
+ *   Scheduler implementation.
  *
  * @{
  */

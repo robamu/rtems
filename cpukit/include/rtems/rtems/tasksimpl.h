@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicTasksImpl
+ * @ingroup RTEMSImplClassicTask
  *
- * @brief Classic Tasks Manager Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicTask.
  */
 
 /*  COPYRIGHT (c) 1989-2014.
@@ -27,9 +28,11 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicTasksImpl Classic Tasks Manager Implementation
+ * @defgroup RTEMSImplClassicTask Task Manager
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the Task Manager implementation.
  *
  * @{
  */

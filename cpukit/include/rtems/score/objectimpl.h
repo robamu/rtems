@@ -3,10 +3,8 @@
  *
  * @ingroup RTEMSScoreObject
  *
- * @brief Inlined Routines in the Object Handler
- *
- * This include file contains the static inline implementation of all
- * of the inlined routines in the Object Handler.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreObject which are only used by the implementation.
  */
 
 /*
@@ -25,6 +23,7 @@
 #include <rtems/score/apimutex.h>
 #include <rtems/score/assert.h>
 #include <rtems/score/isrlock.h>
+#include <rtems/score/status.h>
 #include <rtems/score/sysstate.h>
 #include <rtems/score/threaddispatch.h>
 
@@ -463,14 +462,15 @@ size_t _Objects_Name_to_string(
  * or up to the first four characters of the string based upon
  * whether this object class uses strings for names.
  *
- * @param information points to the object information structure
- * @param[out] the_object is the object to operate upon
- * @param name is a pointer to the name to use
+ * @param information points to the object information.
+ * @param[out] the_object is the object to operate upon.
+ * @param name is a pointer to the name to use.
  *
- * @retval true The operation succeeded.
- * @retval false The operation failed.
+ * @retval STATUS_SUCCESSFUL The operation succeeded.
+ *
+ * @retval STATUS_NO_MEMORY There was no memory available to duplicate the name.
  */
-bool _Objects_Set_name(
+Status_Control _Objects_Set_name(
   const Objects_Information *information,
   Objects_Control           *the_object,
   const char                *name

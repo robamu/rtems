@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicRegionImpl
+ * @ingroup RTEMSImplClassicRegion
  *
- * @brief Classic Region Manager Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicRegion.
  */
 
 /* COPYRIGHT (c) 1989-2008.
@@ -28,9 +29,11 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicRegionImpl Classic Region Manager Implementation
+ * @defgroup RTEMSImplClassicRegion Region Manager
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the Region Manager implementation.
  *
  * @{
  */

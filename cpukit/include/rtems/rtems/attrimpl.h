@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicAttributesImpl
+ * @ingroup RTEMSImplClassicAttr
  *
- * @brief Classic Attributes Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicAttr support.
  */
 
 /*
@@ -26,9 +27,12 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicAttributesImpl Classic Attributes Implementation
+ * @defgroup RTEMSImplClassicAttr Directive Attributes
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the implementation to support directive
+ *   attributes.
  *
  * @{
  */

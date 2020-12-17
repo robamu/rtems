@@ -1,8 +1,10 @@
 /**
- *  @file
+ * @file
  *
- *  @brief Set the Current TOD
- *  @ingroup ClassicClock
+ * @ingroup RTEMSImplClassicClock
+ *
+ * @brief This source file contains the implementation of
+ *   rtems_clock_set().
  */
 
 /*
@@ -18,7 +20,7 @@
 #include "config.h"
 #endif
 
-#include <rtems/rtems/clock.h>
+#include <rtems/rtems/clockimpl.h>
 #include <rtems/score/todimpl.h>
 #include <rtems/config.h>
 

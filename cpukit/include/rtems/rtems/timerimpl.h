@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicTimerImpl
+ * @ingroup RTEMSImplClassicTimer
  *
- * @brief Classic Timer Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicTimer.
  */
 
 /*
@@ -30,9 +31,11 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicTimerImpl Classic Timer Implementation
+ * @defgroup RTEMSImplClassicTimer Timer Manager
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the Timer Manager implementation.
  *
  * @{
  */

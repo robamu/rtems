@@ -3,7 +3,9 @@
  *
  * @ingroup RTEMSScoreSchedulerSMP
  *
- * @brief SMP Scheduler API
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreSchedulerSMP which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -35,7 +37,7 @@ extern "C" {
  *
  * @ingroup RTEMSScoreScheduler
  *
- * @brief SMP Scheduler
+ * @brief This group contains the SMP Scheduler implementation.
  *
  * @{
  */

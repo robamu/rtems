@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreProfiling
  *
- * @brief Profiling Support API
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreProfiling.
  */
 
 /*
@@ -35,7 +36,7 @@ extern "C" {
  * 
  * @ingroup RTEMSScore
  *
- * @brief Profiling support.
+ * @brief This group contains the implementation to support profiling.
  *
  * @{
  */

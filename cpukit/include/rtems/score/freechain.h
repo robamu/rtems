@@ -3,8 +3,11 @@
  *
  * @ingroup RTEMSScoreFreechain
  *
- * @brief Freechain Handler API
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreFreechain which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
+
 /*
  * Copyright (c) 2013 Gedare Bloom.
  *
@@ -27,11 +30,11 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief The Freechain Handler.
+ * @brief This group contains the Freechain Handler implementation.
  *
- * The Freechain Handler is used to manage a chain of nodes, of which size can
- * automatically increase when there is no free node left. This handler
- * provides one data structure: Freechain_Control.
+ * This handler encapsulates functionality related to the management of
+ * free nodes of a user-defined size.  If the chain of free nodes is empty
+ * during an allocation request, it can be dynamically extended.
  *
  * @{
  */

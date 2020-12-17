@@ -32,7 +32,7 @@ links:
 - role: build-dependency
   uid: optconirq
 - role: build-dependency
-  uid: optconminor
+  uid: ../../optconminor
 - role: build-dependency
   uid: optint0len
 - role: build-dependency
@@ -42,7 +42,7 @@ links:
 - role: build-dependency
   uid: optint1ori
 - role: build-dependency
-  uid: ../optmmusz
+  uid: ../optmmusmallpages
 - role: build-dependency
   uid: optnocachelen
 - role: build-dependency
@@ -55,6 +55,8 @@ links:
   uid: ../../obj
 - role: build-dependency
   uid: ../../objirq
+- role: build-dependency
+  uid: ../../objdevserialzynq
 - role: build-dependency
   uid: linkcmds
 - role: build-dependency

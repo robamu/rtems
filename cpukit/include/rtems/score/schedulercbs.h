@@ -3,10 +3,9 @@
  *
  * @ingroup RTEMSScoreSchedulerCBS
  *
- * @brief Thread manipulation for the CBS scheduler
- *
- * This include file contains all the constants and structures associated
- * with the manipulation of threads for the CBS scheduler.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreSchedulerCBS which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -35,11 +34,12 @@ extern "C" {
 #endif
 
 /**
- * @defgroup RTEMSScoreSchedulerCBS CBS Scheduler
+ * @defgroup RTEMSScoreSchedulerCBS Constant Bandwidth Server (CBS) Scheduler
  *
  * @ingroup RTEMSScoreScheduler
  *
- * @brief CBS Scheduler.
+ * @brief This group contains the Constant Bandwidth Server (CBS) Scheduler
+ *   implementation.
  *
  * @{
  */

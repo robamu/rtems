@@ -3,7 +3,8 @@
  *
  * @ingroup Timespec
  *
- * @brief Contains Helpers for Manipulating Timespecs.
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreTimespec.
  */
 
 /*
@@ -19,14 +20,12 @@
 #define _RTEMS_SCORE_TIMESPEC_H
 
 /**
- * @defgroup Timespec Helpers
+ * @defgroup RTEMSScoreTimespec Timespec Helpers
  *
  * @ingroup RTEMSScore
  *
- * @brief Timespec Helpers
- *
- * This handler encapsulates functionality related to manipulating
- * POSIX struct timespecs.
+ * @brief This group contains the implementation to support operations with
+ *   variables of the POSIX defined struct timespec type.
  *
  * @{
  */

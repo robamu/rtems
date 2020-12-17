@@ -3,10 +3,8 @@
  *
  * @ingroup RTEMSScoreThreadMP
  *
- * @brief Multiprocessing Portion of the Thread Package
- *
- * This include file contains the specification for all routines
- * and data specific to the multiprocessing portion of the thread package.
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreThreadMP.
  */
 
 /*
@@ -32,11 +30,12 @@ extern "C" {
 #endif
 
 /**
- * @defgroup RTEMSScoreThreadMP Thread Handler Multiprocessing Support
+ * @defgroup RTEMSScoreThreadMP Thread Handler Multiprocessing (MP) Support
  *
- * @ingroup RTEMSScore
+ * @ingroup RTEMSScoreThread
  *
- * @brief Thread Handler Multiprocessing Support
+ * @brief This group contains the implementation to support the Thread Handler
+ *   in multiprocessing (MP) configurations.
  *
  * This handler encapsulates functionality which is related to managing
  * threads in a multiprocessor system configuration.  This handler must

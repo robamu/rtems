@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicBarrierImpl
+ * @ingroup RTEMSImplClassicBarrier
  *
- * @brief Classic Barrier Manager Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicBarrier.
  */
 
 /*
@@ -27,11 +28,13 @@ extern "C" {
 #endif
 
 /**
- *  @defgroup ClassicBarrierImpl Classic Barrier Implementation
+ * @defgroup RTEMSImplClassicBarrier Barrier Manager
  *
- *  @ingroup RTEMSImplClassic
+ * @ingroup RTEMSImplClassic
  *
- *  @{
+ * @brief This group contains the Barrier Manager implementation.
+ *
+ * @{
  */
 
 /**

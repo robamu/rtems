@@ -55,15 +55,16 @@ endif
 
 # IRQ
 librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/irq/irq-default-handler.c
-librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/shared/irq/irq-gic.c
+librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/dev/irq/arm-gicv2.c
+librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/shared/irq/irq-arm-gicvx-aarch32.c
 
 # Console
 librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/dev/serial/console-termios.c
 librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/xilinx-zynq/console/console-config.c
 librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/xilinx-zynq/console/console-init.c
 librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/xilinx-zynq/console/debug-console.c
-librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/shared/serial/zynq-uart.c
-librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/shared/serial/zynq-uart-polled.c
+librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/dev/serial/zynq-uart.c
+librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/dev/serial/zynq-uart-polled.c
 
 # Clock
 librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/shared/clock/clock-a9mpcore.c

@@ -1,10 +1,10 @@
 /**
  * @file
  *
- * @brief Message Manager MP Support
+ * @ingroup RTEMSImplClassicMessageMP
  *
- * This include file contains all the constants and structures associated
- * with the Multiprocessing Support in the Message Manager.
+ * @brief This header file provides the implementation interfaces of the
+ *   @ref RTEMSImplClassicMessageMP.
  */
 
 /* COPYRIGHT (c) 1989-2013.
@@ -29,14 +29,16 @@ extern "C" {
 #endif
 
 /**
- *  @defgroup ClassicMsgMP Message Queue MP Support
+ * @defgroup RTEMSImplClassicMessageMP \
+ *   Message Manager Multiprocessing (MP) Support
  *
- *  @ingroup ClassicMP
+ * @ingroup RTEMSImplClassicMessage
  *
- *  This encapsulates functionality related to the transparent multiprocessing
- *  support within the Classic API Message Queue Manager.
+ * @brief This group contains the implementation to support the Message Manager
+ *   in multiprocessing (MP) configurations.
+ *
+ * @{
  */
-/*{*/
 
 /**
  *  The following enumerated type defines the list of

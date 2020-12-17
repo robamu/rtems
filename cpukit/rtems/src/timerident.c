@@ -3,9 +3,10 @@
 /**
  * @file
  *
- * @ingroup ClassicTimerImpl
+ * @ingroup RTEMSImplClassicTimer
  *
- * @brief rtems_timer_ident() Implementation
+ * @brief This source file contains the implementation of
+ *   rtems_timer_ident().
  */
 
 /*

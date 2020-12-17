@@ -3,11 +3,9 @@
  *
  * @ingroup RTEMSScoreObject
  *
- * @brief Constants and Structures Associated with the Object Handler
- *
- * This include file contains all the constants and structures associated
- * with the Object Handler.  This Handler provides mechanisms which
- * can be used to initialize and manipulate all objects which have ids.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreObject which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -34,9 +32,9 @@ extern "C" {
  *
  * @ingroup RTEMSImpl
  *
- * @brief Provides services for all APIs.
+ * @brief This group contains the SuperCore implementation.
  *
- * @{
+ * The SuperCore provides services for all APIs.
  */
 
 /**
@@ -44,15 +42,19 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Provides CPU architecture dependent services.
- *
- * @{
+ * @brief This group contains the implementation to support a processor
+ *   architecture.
  */
 
 /**
  * @defgroup RTEMSScoreObject Object Handler
  *
  * @ingroup RTEMSScore
+ *
+ * @brief This group contains the Object Handler implementation.
+ *
+ * This handler provides mechanisms which can be used to initialize and
+ * manipulate all objects which have identifiers.
  *
  * @{
  */
@@ -347,8 +349,6 @@ extern uint16_t _Objects_Local_node;
 #define _Objects_Local_node ((uint16_t) 1)
 #endif
 
-/** @} */
-/** @} */
 /** @} */
 
 #ifdef __cplusplus

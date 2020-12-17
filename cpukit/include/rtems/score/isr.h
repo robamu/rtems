@@ -3,12 +3,8 @@
  *
  * @ingroup RTEMSScoreISR
  *
- * @brief Data Related to the Management of Processor Interrupt Levels
- *
- * This include file contains all the constants and structures associated
- * with the management of processor interrupt levels.  This handler
- * supports interrupt critical sections, vectoring of user interrupt
- * handlers, nesting of interrupts, and manipulating interrupt levels.
+ * @brief This header file provides the main interfaces of the
+ *   @ref RTEMSScoreISR.
  */
 
 /*
@@ -30,13 +26,14 @@
  *
  * @ingroup RTEMSScore
  *
- * @brief ISR Handler
+ * @brief This group contains the ISR Handler implementation.
  *
  * This handler encapsulates functionality which provides the foundation
- * ISR services used in all of the APIs supported by RTEMS.
+ * ISR services used in all of the APIs supported by RTEMS.  This handler
+ * supports interrupt critical sections, vectoring of user interrupt handlers,
+ * nesting of interrupts, and manipulating interrupt levels.
  *
- * The ISR Nest level counter variable is maintained as part of the
- * per cpu data structure.
+ * The ::_ISR_Nest_level variable is maintained by @ref RTEMSScorePerCPU.
  *
  * @{
  */

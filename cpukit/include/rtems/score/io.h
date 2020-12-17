@@ -1,3 +1,12 @@
+/**
+ * @file
+ *
+ * @ingroup RTEMSScoreIO
+ *
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreIO.
+ */
+
 /*
  * Copyright (c) 2017 embedded brains GmbH.  All rights reserved.
  *
@@ -22,6 +31,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+/**
+ * @defgroup RTEMSScoreIO IO Handler
+ *
+ * @ingroup RTEMSScore
+ *
+ * @brief This group contains the IO Handler implementation.
+ *
+ * @{
+ */
 
 typedef void ( *IO_Put_char )( int c, void *arg );
 
@@ -63,6 +82,8 @@ int _IO_Base64(
   const char  *wordbreak,
   int          wordlen
 );
+
+/** @} */ 
 
 #ifdef __cplusplus
 }

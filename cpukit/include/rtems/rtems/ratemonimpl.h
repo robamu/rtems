@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicRateMonImpl
+ * @ingroup RTEMSImplClassicRateMonotonic
  *
- * @brief Classic Rate Monotonic Scheduler Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicRateMonotonic.
  */
 
 /*  COPYRIGHT (c) 1989-2008.
@@ -32,9 +33,11 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicRateMonImpl Classic Rate Monotonic Scheduler Implementation
+ * @defgroup RTEMSImplClassicRateMonotonic Rate Monotonic Manager
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the Rate Monotonic Manager implementation.
  *
  * @{
  */

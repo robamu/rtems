@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicSemImpl
+ * @ingroup RTEMSImplClassicSemaphore
  *
- * @brief Classic Semaphore Manager Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicSemaphore.
  */
 
 /*  COPYRIGHT (c) 1989-2008.
@@ -27,9 +28,11 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicSemImpl Semaphore Manager Implementation
+ * @defgroup RTEMSImplClassicSemaphore Semaphore Manager
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the Semaphore Manager implementation.
  *
  * @{
  */

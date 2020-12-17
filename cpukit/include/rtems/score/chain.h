@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreChain
  *
- * @brief Chain Handler API
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreChain which are used by the implementation and the API.
  */
 
 /*
@@ -29,7 +30,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Provides Data Structures Chain Node and Chain Control
+ * @brief This group contains the Chain Handler implementation.
  *
  * The Chain Handler is used to manage sets of entities.  This handler
  * provides two data structures.  The Chain Node data structure is included

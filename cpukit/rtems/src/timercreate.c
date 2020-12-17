@@ -1,8 +1,12 @@
 /**
- *  @file
+ * @file
  *
- *  @brief RTEMS Create Timer
- *  @ingroup ClassicTimer
+ * @ingroup RTEMSImplClassicTimer
+ *
+ * @brief This source file contains the definition of ::_Timer_server and the
+ *   implementation of _Timer_Routine_adaptor(), _Timer_Fire(),
+ *   _Timer_Fire_after(), _Timer_Fire_when(), _Timer_Cancel(), and the Timer
+ *   Manager system initialization.
  */
 
 /*
@@ -19,7 +23,7 @@
 #endif
 
 #include <rtems/rtems/timerimpl.h>
-#include <rtems/rtems/clock.h>
+#include <rtems/rtems/clockimpl.h>
 #include <rtems/rtems/status.h>
 #include <rtems/rtems/support.h>
 #include <rtems/score/assert.h>

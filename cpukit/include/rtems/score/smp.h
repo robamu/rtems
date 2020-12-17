@@ -3,7 +3,9 @@
  *
  * @ingroup RTEMSScoreSMP
  *
- * @brief SuperCore SMP Support API
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreSMP which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -29,9 +31,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief SMP Support
- *
- * This defines the interface of the SuperCore SMP support.
+ * @brief This group contains the implementation to support SMP systems.
  *
  * @{
  */

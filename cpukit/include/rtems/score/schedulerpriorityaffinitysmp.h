@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreSchedulerPriorityAffinitySMP
  *
- * @brief Deterministic Priority Affinity SMP Scheduler API
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreSchedulerPriorityAffinitySMP.
  */
 
 /*
@@ -34,7 +35,8 @@ extern "C" {
  *
  * @ingroup RTEMSScoreSchedulerPrioritySMP
  *
- * @brief Deterministic Priority Affinity SMP Scheduler
+ * @brief This group contains the Deterministic Priority Affinity SMP Scheduler
+ *   implementation.
  *
  * This is an extension of the Deterministic Priority SMP Scheduler. which
  * is an implementation of the global fixed priority scheduler (G-FP). 

@@ -1,8 +1,10 @@
 /**
- *  @file
+ * @file
  *
- *  @brief RTEMS Task Wake When
- *  @ingroup ClassicTasks
+ * @ingroup RTEMSImplClassicTask
+ *
+ * @brief This source file contains the implementation of
+ *   rtems_task_wake_when().
  */
 
 /*
@@ -19,7 +21,7 @@
 #endif
 
 #include <rtems/rtems/tasks.h>
-#include <rtems/rtems/clock.h>
+#include <rtems/rtems/clockimpl.h>
 #include <rtems/score/threadimpl.h>
 #include <rtems/score/todimpl.h>
 #include <rtems/score/watchdogimpl.h>

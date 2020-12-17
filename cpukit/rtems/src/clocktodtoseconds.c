@@ -1,8 +1,10 @@
 /**
- *  @file
+ * @file
  *
- *  @brief TOD to Seconds
- *  @ingroup ClassicClock
+ * @ingroup RTEMSImplClassicClock
+ *
+ * @brief This source file contains the implementation of
+ *   _TOD_To_seconds().
  */
 
 /*
@@ -18,7 +20,7 @@
 #include "config.h"
 #endif
 
-#include <rtems/rtems/clock.h>
+#include <rtems/rtems/clockimpl.h>
 #include <rtems/score/todimpl.h>
 
 #define TOD_SECONDS_AT_2100_03_01_00_00 4107538800UL

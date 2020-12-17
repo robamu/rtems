@@ -30,6 +30,10 @@ links:
 - role: build-dependency
   uid: objsmp
 - role: build-dependency
+  uid: ../optgtfreq
+- role: build-dependency
+  uid: ../optgtusevirt
+- role: build-dependency
   uid: optcachedata
 - role: build-dependency
   uid: optcacheinst
@@ -40,11 +44,7 @@ links:
 - role: build-dependency
   uid: optconirq
 - role: build-dependency
-  uid: optconminor
-- role: build-dependency
-  uid: optgentmrfreq
-- role: build-dependency
-  uid: optgentmrusevirt
+  uid: ../../optconminor
 - role: build-dependency
   uid: optint0len
 - role: build-dependency
@@ -68,6 +68,8 @@ links:
 - role: build-dependency
   uid: ../../objirq
 - role: build-dependency
+  uid: ../../objdevserialzynq
+- role: build-dependency
   uid: ../../opto2
 - role: build-dependency
   uid: linkcmds
@@ -79,9 +81,8 @@ source:
 - bsps/arm/shared/clock/arm-generic-timer-aarch32.c
 - bsps/arm/shared/cp15/arm-cp15-set-exception-handler.c
 - bsps/arm/shared/cp15/arm-cp15-set-ttb-entries.c
-- bsps/arm/shared/irq/irq-gic.c
-- bsps/arm/shared/serial/zynq-uart.c
-- bsps/arm/shared/serial/zynq-uart-polled.c
+- bsps/shared/dev/irq/arm-gicv2.c
+- bsps/arm/shared/irq/irq-arm-gicvx-aarch32.c
 - bsps/arm/shared/start/bsp-start-memcpy.S
 - bsps/arm/xilinx-zynqmp/console/console-config.c
 - bsps/arm/xilinx-zynqmp/start/bspreset.c

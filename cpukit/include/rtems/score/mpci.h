@@ -3,7 +3,9 @@
  *
  * @ingroup RTEMSScoreMPCI
  *
- * @brief MPCI Layer API
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreMPCI which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -32,7 +34,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief MPCI Handler
+ * @brief This group contains the MPCI Handler implementation.
  *
  * The MPCI Handler encapsulates functionality which is related to the
  * generation, receipt, and processing of remote operations in a

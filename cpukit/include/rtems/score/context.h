@@ -3,9 +3,8 @@
  *
  * @ingroup RTEMSScoreContext
  *
- * @brief Information About Each Thread's Context
- *
- * This include file contains all information about each thread's context.
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreContext.
  */
 
 /*
@@ -25,7 +24,7 @@
  *
  * @ingroup RTEMSScore
  *
- * @brief Functionality for Abstraction of Thread Context Management
+ * @brief This group contains the Context Handler implementation.
  *
  * This handler encapsulates functionality which abstracts thread context
  * management in a portable manner.

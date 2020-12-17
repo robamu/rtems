@@ -1,9 +1,11 @@
 /**
  * @file
  *
- * @ingroup ClassicDPMEMImpl
+ * @ingroup RTEMSImplClassicDPMem
  *
- * @brief Classic Dual Ported Memory Manager Data Structures
+ * @brief This header file provides data structures used by the implementation
+ *   and the @ref RTEMSImplApplConfig to define
+ *   ::_Dual_ported_memory_Information.
  */
 
 /* COPYRIGHT (c) 1989-2008.
@@ -25,7 +27,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup ClassicDPMEMImpl
+ * @addtogroup RTEMSImplClassicDPMem
  *
  * @{
  */

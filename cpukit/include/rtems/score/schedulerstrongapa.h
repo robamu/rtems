@@ -3,7 +3,8 @@
  *
  * @ingroup RTEMSScoreSchedulerStrongAPA
  *
- * @brief Strong APA Scheduler API
+ * @brief This header file provides the interfaces of the
+ *   @ref RTEMSScoreSchedulerStrongAPA.
  */
 
 /*
@@ -36,7 +37,7 @@ extern "C" {
  *
  * @ingroup RTEMSScoreSchedulerSMP
  *
- * @brief Strong APA Scheduler
+ * @brief This group contains the Strong APA Scheduler implementation.
  *
  * This is an implementation of the global fixed priority scheduler (G-FP).  It
  * uses one ready chain per priority to ensure constant time insert operations.

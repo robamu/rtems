@@ -3,9 +3,9 @@
  *
  * @ingroup RTEMSScoreStates
  *
- * @brief Thread Execution State Information
- *
- * This include file defines thread execution state information.
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScoreStates which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -31,7 +31,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief SuperCore Thread States
+ * @brief This group contains the implementation to support thread states.
  *
  * This handler encapsulates functionality which relates to the management of
  * the state bitmap associated with each thread.

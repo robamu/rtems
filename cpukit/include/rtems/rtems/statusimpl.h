@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicStatusImpl
+ * @ingroup RTEMSImplClassicStatus
  *
- * @brief Classic Status Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicStatus support.
  */
 
 /*  COPYRIGHT (c) 1989-2008.
@@ -25,9 +26,12 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicStatusImpl Classic Status Implementation
+ * @defgroup RTEMSImplClassicStatus Directive Status
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the implementation to support directive status
+ *   codes.
  *
  * @{
  */

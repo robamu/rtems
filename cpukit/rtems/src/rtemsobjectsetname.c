@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicClassInfo Object Class Information
+ * @ingroup RTEMSImplClassicObject
  *
- * @brief Set Name of Object
+ * @brief This source file contains the implementation of
+ *   rtems_object_set_name().
  */
 
 /*
@@ -36,6 +37,7 @@ rtems_status_code rtems_object_set_name(
   Objects_Information *information;
   Objects_Control     *the_object;
   Objects_Id           tmpId;
+  Status_Control       status;
 
   if ( !name )
     return RTEMS_INVALID_ADDRESS;
@@ -54,7 +56,7 @@ rtems_status_code rtems_object_set_name(
     return RTEMS_INVALID_ID;
   }
 
-  _Objects_Set_name( information, the_object, name );
+  status = _Objects_Set_name( information, the_object, name );
   _Objects_Allocator_unlock();
-  return RTEMS_SUCCESSFUL;
+  return STATUS_GET_CLASSIC( status );
 }

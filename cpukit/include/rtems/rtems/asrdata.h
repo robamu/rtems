@@ -1,9 +1,11 @@
 /**
  * @file
  *
- * @ingroup ClassicASRImpl
+ * @ingroup RTEMSImplClassicASR
  *
- * @brief Classic ASR Data Structures
+ * @brief This header file provides data structures used by the implementation
+ *   and the @ref RTEMSImplApplConfig to ultimately define
+ *   ::Thread_Configured_control.
  */
 
 /* COPYRIGHT (c) 1989-2013.
@@ -24,7 +26,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup ClassicASRImpl
+ * @addtogroup RTEMSImplClassicASR
  *
  * @{
  */

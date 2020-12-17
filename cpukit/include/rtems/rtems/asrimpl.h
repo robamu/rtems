@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicASRImpl
+ * @ingroup RTEMSImplClassicASR
  *
- * @brief Classic ASR Implementation
+ * @brief This header file provides the implementation interfaces of
+ *   the @ref RTEMSImplClassicASR support.
  */
 
 /* COPYRIGHT (c) 1989-2008.
@@ -26,9 +27,12 @@ extern "C" {
 #endif
 
 /**
- * @defgroup ClassicASRImpl Classic ASR Implementation
+ * @defgroup RTEMSImplClassicASR Asynchronous Signal Routine (ASR)
  *
  * @ingroup RTEMSImplClassic
+ *
+ * @brief This group contains the implementation to support asynchronous signal
+ *   routines.
  *
  * @{
  */

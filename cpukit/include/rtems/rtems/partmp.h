@@ -1,10 +1,10 @@
 /**
  * @file
  *
- * @brief MP Support in Partition Manager
+ * @ingroup RTEMSImplClassicPartitionMP
  *
- * This include file contains all the constants and structures associated
- * with the Multiprocessing Support in the Partition Manager.
+ * @brief This header file provides the implementation interfaces of the
+ *   @ref RTEMSImplClassicPartitionMP.
  */
 
 /* COPYRIGHT (c) 1989-2013.
@@ -29,14 +29,16 @@ extern "C" {
 #endif
 
 /**
- *  @defgroup ClassicPartMP Partition MP Support
+ * @defgroup RTEMSImplClassicPartitionMP \
+ *   Partition Manager Multiprocessing (MP) Support
  *
- *  @ingroup ClassicMP
+ * @ingroup RTEMSImplClassicPartition
  *
- *  This encapsulates functionality related to the transparent multiprocessing
- *  support within the Classic API Partition Manager.
+ * @brief This group contains the implementation to support the Partition Manager
+ *   in multiprocessing (MP) configurations.
+ *
+ * @{
  */
-/*{*/
 
 /**
  *  The following enumerated type defines the list of

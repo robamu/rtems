@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @ingroup ClassicRegionImpl
+ * @ingroup RTEMSImplClassicRegion
  *
- * @brief Classic Region Manager Data Structures
+ * @brief This header file provides data structures used by the implementation
+ *   and the @ref RTEMSImplApplConfig to define ::_Region_Information.
  */
 
 /* COPYRIGHT (c) 1989-2013.
@@ -27,7 +28,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup ClassicRegionImpl
+ * @addtogroup RTEMSImplClassicRegion
  *
  * @{
  */

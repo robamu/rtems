@@ -3,7 +3,9 @@
  *
  * @ingroup RTEMSScorePriority
  *
- * @brief Priority Handler API
+ * @brief This header file provides interfaces of the
+ *   @ref RTEMSScorePriority which are used by the implementation and the
+ *   @ref RTEMSImplApplConfig.
  */
 
 /*
@@ -35,7 +37,7 @@ extern "C" {
  *
  * @ingroup RTEMSScore
  *
- * @brief Priority Handler
+ * @brief This group contains the Priority Handler implementation.
  *
  * This handler encapsulates functionality which is used to manage thread
  * priorities.  The actual priority of a thread is an aggregation of priority

@@ -3,9 +3,10 @@
 /**
  * @file
  *
- * @ingroup ClassicDPMEMImpl
+ * @ingroup RTEMSImplClassicDPMem
  *
- * @brief rtems_port_ident() Implementation
+ * @brief This source file contains the implementation of
+ *   rtems_port_ident().
  */
 
 /*

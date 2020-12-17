@@ -1,9 +1,10 @@
 /**
  * @file
  *
- * @brief Returns a text for an internal error code.
+ * @ingroup RTEMSImplClassic
  *
- * @ingroup ClassicFatal
+ * @brief This source file contains the implementation of
+ *   rtems_internal_error_text().
  */
 
 /*
@@ -68,7 +69,8 @@ static const char *const internal_error_text[] = {
   "INTERNAL_ERROR_ILLEGAL_USE_OF_FLOATING_POINT_UNIT",
   "INTERNAL_ERROR_ARC4RANDOM_GETENTROPY_FAIL",
   "INTERNAL_ERROR_NO_MEMORY_FOR_PER_CPU_DATA",
-  "INTERNAL_ERROR_TOO_LARGE_TLS_SIZE"
+  "INTERNAL_ERROR_TOO_LARGE_TLS_SIZE",
+  "INTERNAL_ERROR_RTEMS_INIT_TASK_CONSTRUCT_FAILED"
 };
 
 const char *rtems_internal_error_text( rtems_fatal_code error )

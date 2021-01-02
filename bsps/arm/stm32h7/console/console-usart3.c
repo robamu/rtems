@@ -36,7 +36,7 @@
 #if STM32H743ZI_NUCLEO == 1
 static const stm32h7_uart_config stm32h7_usart3_config = {
   .gpio = {
-    .regs = GPIOB,
+    .regs = GPIOD,
     .config = {
       .Pin = GPIO_PIN_8 | GPIO_PIN_9,
       .Mode = GPIO_MODE_AF_PP,

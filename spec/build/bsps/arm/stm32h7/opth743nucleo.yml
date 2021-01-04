@@ -9,5 +9,5 @@ format: '{}'
 links: []
 name: STM32H743ZI_NUCLEO
 description: |
-  Nucleo board. Use 8 MHz HSE external clock.
+  Nucleo board. Use 8 MHz HSE external clock and different pins for the UART console.
 type: build

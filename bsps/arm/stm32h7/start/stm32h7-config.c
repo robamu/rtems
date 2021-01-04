@@ -29,11 +29,34 @@
 #include "config.h"
 #endif
 
+//#ifdef __rtems__
+#include <bspopts>
+//#endif
+
 #include <stm32h7/hal.h>
+
 
 const uint32_t stm32h7_config_pwr_regulator_voltagescaling =
   PWR_REGULATOR_VOLTAGE_SCALE0;
 
+#if STM32H743ZI_NUCLEO == 1
+const RCC_OscInitTypeDef stm32h7_config_oscillator = {
+  .OscillatorType = RCC_OSCILLATORTYPE_HSE,
+  .HSEState = RCC_HSE_BYPASS,
+  .HSIState = RCC_HSI_OFF,
+  .CSIState = RCC_CSI_OFF,
+  .PLL.PLLState = RCC_PLL_ON,
+  .PLL.PLLSource = RCC_PLLSOURCE_HSE,
+  .PLL.PLLM = 4,
+  .PLL.PLLN = 400,
+  .PLL.PLLP = 2,
+  .PLL.PLLQ = 4,
+  .PLL.PLLR = 2,
+  .PLL.PLLRGE = RCC_PLL1VCIRANGE_1,
+  .PLL.PLLVCOSEL = RCC_PLL1VCOWIDE,
+  .PLL.PLLFRACN = 0
+};
+#else
 const RCC_OscInitTypeDef stm32h7_config_oscillator = {
   .OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSE
     | RCC_OSCILLATORTYPE_LSE | RCC_OSCILLATORTYPE_HSI48,
@@ -53,6 +76,7 @@ const RCC_OscInitTypeDef stm32h7_config_oscillator = {
   .PLL.PLLVCOSEL = RCC_PLL1VCOWIDE,
   .PLL.PLLFRACN = 0
 };
+#endif /* STM32H743ZI_NUCLEO == 1 */
 
 const RCC_ClkInitTypeDef stm32h7_config_clocks = {
   .ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
@@ -69,6 +93,8 @@ const RCC_ClkInitTypeDef stm32h7_config_clocks = {
 
 const uint32_t stm32h7_config_flash_latency = FLASH_LATENCY_4;
 
+
+#if STM32H743ZI_NUCLEO == 1
 const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
   .PeriphClockSelection = RCC_PERIPHCLK_RTC | RCC_PERIPHCLK_USART3
     | RCC_PERIPHCLK_FDCAN | RCC_PERIPHCLK_USART1 | RCC_PERIPHCLK_I2C1
@@ -98,3 +124,34 @@ const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
   .RTCClockSelection = RCC_RTCCLKSOURCE_LSE,
   .RngClockSelection = RCC_RNGCLKSOURCE_HSI48
 };
+#else
+const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
+  .PeriphClockSelection = RCC_PERIPHCLK_RTC | RCC_PERIPHCLK_USART3
+    | RCC_PERIPHCLK_FDCAN | RCC_PERIPHCLK_USART1 | RCC_PERIPHCLK_I2C1
+    | RCC_PERIPHCLK_USB | RCC_PERIPHCLK_FMC | RCC_PERIPHCLK_RNG,
+  .PLL2.PLL2M = 3,
+  .PLL2.PLL2N = 48,
+  .PLL2.PLL2P = 1,
+  .PLL2.PLL2Q = 2,
+  .PLL2.PLL2R = 2,
+  .PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3,
+  .PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE,
+  .PLL2.PLL2FRACN = 0,
+  .PLL3.PLL3M = 25,
+  .PLL3.PLL3N = 192,
+  .PLL3.PLL3P = 2,
+  .PLL3.PLL3Q = 4,
+  .PLL3.PLL3R = 2,
+  .PLL3.PLL3RGE = RCC_PLL3VCIRANGE_0,
+  .PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE,
+  .PLL3.PLL3FRACN = 0,
+  .FmcClockSelection = RCC_FMCCLKSOURCE_PLL2,
+  .FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL,
+  .Usart234578ClockSelection = RCC_USART234578CLKSOURCE_D2PCLK1,
+  .Usart16ClockSelection = RCC_USART16CLKSOURCE_D2PCLK2,
+  .I2c123ClockSelection = RCC_I2C123CLKSOURCE_D2PCLK1,
+  .UsbClockSelection = RCC_USBCLKSOURCE_PLL3,
+  .RTCClockSelection = RCC_RTCCLKSOURCE_LSE,
+  .RngClockSelection = RCC_RNGCLKSOURCE_HSI48
+};
+#endif

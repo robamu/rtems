@@ -29,12 +29,17 @@
 #include "config.h"
 #endif
 
+#ifdef __rtems__
+#include <bspopts.h>
+#endif
+
 #include <stm32h7/hal.h>
+
 
 const uint32_t stm32h7_config_pwr_regulator_voltagescaling =
   PWR_REGULATOR_VOLTAGE_SCALE0;
 
-const RCC_OscInitTypeDef stm32h7_config_oscillator = {
+__attribute__((weak)) const RCC_OscInitTypeDef stm32h7_config_oscillator = {
   .OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSE
     | RCC_OSCILLATORTYPE_LSE | RCC_OSCILLATORTYPE_HSI48,
   .HSEState = RCC_HSE_ON,
@@ -54,7 +59,7 @@ const RCC_OscInitTypeDef stm32h7_config_oscillator = {
   .PLL.PLLFRACN = 0
 };
 
-const RCC_ClkInitTypeDef stm32h7_config_clocks = {
+__attribute__((weak)) const RCC_ClkInitTypeDef stm32h7_config_clocks = {
   .ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
     | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2
     | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1,
@@ -69,7 +74,7 @@ const RCC_ClkInitTypeDef stm32h7_config_clocks = {
 
 const uint32_t stm32h7_config_flash_latency = FLASH_LATENCY_4;
 
-const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
+__attribute__((weak)) const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
   .PeriphClockSelection = RCC_PERIPHCLK_RTC | RCC_PERIPHCLK_USART3
     | RCC_PERIPHCLK_FDCAN | RCC_PERIPHCLK_USART1 | RCC_PERIPHCLK_I2C1
     | RCC_PERIPHCLK_USB | RCC_PERIPHCLK_FMC | RCC_PERIPHCLK_RNG,

@@ -25,13 +25,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef __rtems__
+#include <bspopts.h>
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include <stm32h7/hal.h>
 
-static const stm32h7_uart_config stm32h7_usart3_config = {
+#if STM32H743ZI_NUCLEO == 1
+__attribute__((weak)) static const stm32h7_uart_config stm32h7_usart3_config = {
+  .gpio = {
+    .regs = GPIOD,
+    .config = {
+      .Pin = GPIO_PIN_8 | GPIO_PIN_9,
+      .Mode = GPIO_MODE_AF_PP,
+      .Pull = GPIO_NOPULL,
+      .Speed = GPIO_SPEED_FREQ_LOW,
+      .Alternate = GPIO_AF7_USART3
+    }
+  },
+  .irq = USART3_IRQn,
+  .device_index = 2
+};
+#else
+__attribute__((weak)) static const stm32h7_uart_config stm32h7_usart3_config = {
   .gpio = {
     .regs = GPIOB,
     .config = {
@@ -45,6 +65,7 @@ static const stm32h7_uart_config stm32h7_usart3_config = {
   .irq = USART3_IRQn,
   .device_index = 2
 };
+#endif
 
 stm32h7_uart_context stm32h7_usart3_instance = {
   .uart = {

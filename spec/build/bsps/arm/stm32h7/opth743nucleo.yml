@@ -1,0 +1,13 @@
+actions:
+- get-boolean: null
+- define-condition: null
+build-type: option
+default: false
+default-by-variant: []
+enabled-by: true
+format: '{}'
+links: []
+name: STM32H743ZI_NUCLEO
+description: |
+  Nucleo board. Use 8 MHz HSE external clock.
+type: build

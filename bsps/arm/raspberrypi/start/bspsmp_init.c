@@ -55,6 +55,9 @@ void rpi_start_rtems_on_secondary_processor(void)
 {
   uint32_t ctrl;
 
+  /* Change the VBAR from the start to the normal vector table */
+  arm_cp15_set_vector_base_address(bsp_vector_table_begin);
+
   ctrl = arm_cp15_start_setup_mmu_and_cache(
     0,
     ARM_CP15_CTRL_AFE | ARM_CP15_CTRL_Z
@@ -70,8 +73,6 @@ void rpi_start_rtems_on_secondary_processor(void)
   arm_cp15_set_translation_table_base(
     (uint32_t *) bsp_translation_table_base
   );
-
-  arm_cp15_tlb_invalidate();
 
   ctrl |= ARM_CP15_CTRL_I | ARM_CP15_CTRL_C | ARM_CP15_CTRL_M;
   ctrl &= ~ARM_CP15_CTRL_V;

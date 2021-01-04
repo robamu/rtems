@@ -1,16 +1,7 @@
 /* SPDX-License-Identifier: BSD-2-Clause */
 
-/**
- * @file
- *
- * @ingroup RTEMSBSPsARMShared
- *
- * @brief ARM-specific IRQ handlers.
- */
-
 /*
- * Copyright (C) 2020 On-Line Applications Research Corporation (OAR)
- * Written by Kinsey Moore <kinsey.moore@oarcorp.com>
+ * Copyright (C) 2020 embedded brains GmbH (http://www.embedded-brains.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,23 +25,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <libcpu/arm-cp15.h>
-#include <dev/irq/arm-gic-irq.h>
-#include <bsp/irq-generic.h>
-#include <rtems/score/armv4.h>
+#ifndef LIBBSP_ARM_FVP_BSP_H
+#define LIBBSP_ARM_FVP_BSP_H
 
-void arm_interrupt_handler_dispatch(rtems_vector_number vector)
-{
-  uint32_t psr = _ARMV4_Status_irq_enable();
-  bsp_interrupt_handler_dispatch(vector);
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
 
-  _ARMV4_Status_restore(psr);
+#include <rtems.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @defgroup RTEMSBSPsARMFVP Arm Fixed Virtual Platform
+ *
+ * @ingroup RTEMSBSPsARM
+ *
+ * @brief This BSP supports the Arm Fixed Virtual Platform.
+ *
+ * @{
+ */
+
+#define BSP_FEATURE_IRQ_EXTENSION
+
+extern char arm_fvp_memory_null_begin[];
+extern char arm_fvp_memory_null_end[];
+extern char arm_fvp_memory_null_size[];
+
+extern char arm_fvp_memory_dram_begin[];
+extern char arm_fvp_memory_dram_end[];
+extern char arm_fvp_memory_dram_size[];
+
+extern char arm_fvp_memory_device_begin[];
+extern char arm_fvp_memory_device_end[];
+extern char arm_fvp_memory_device_size[];
+
+/** @} */
+
+#ifdef __cplusplus
 }
+#endif
 
-void arm_interrupt_facility_set_exception_handler(void)
-{
-  arm_cp15_set_exception_handler(
-    ARM_EXCEPTION_IRQ,
-    _ARMV4_Exception_interrupt
-  );
-}
+#endif /* LIBBSP_ARM_FVP_BSP_H */

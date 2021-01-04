@@ -3,14 +3,13 @@
 /**
  * @file
  *
- * @ingroup RTEMSBSPsAArch64Shared
+ * @ingroup RTEMSBSPsARMFVP
  *
- * @brief AArch64-specific ARM GICv3 handlers.
+ * @brief This source file contains the implementation of bsp_start().
  */
 
 /*
- * Copyright (C) 2020 On-Line Applications Research Corporation (OAR)
- * Written by Kinsey Moore <kinsey.moore@oarcorp.com>
+ * Copyright (C) 2020 embedded brains GmbH (http://www.embedded-brains.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,26 +33,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dev/irq/arm-gic-irq.h>
-#include <bsp/irq-generic.h>
-#include <rtems/score/cpu_irq.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-void arm_interrupt_handler_dispatch(rtems_vector_number vector)
+#include <bsp/bootcard.h>
+#include <bsp/irq-generic.h>
+
+#include <dev/clock/arm-generic-timer.h>
+
+#include <libcpu/arm-cp15.h>
+
+void arm_generic_timer_get_config( uint32_t *frequency, uint32_t *irq )
 {
-  uint32_t interrupt_level = _CPU_ISR_Get_level();
-  AArch64_interrupt_enable(1);
-  bsp_interrupt_handler_dispatch(vector);
-  _CPU_ISR_Set_level(interrupt_level);
+#ifdef ARM_GENERIC_TIMER_FREQ
+  *frequency = ARM_GENERIC_TIMER_FREQ;
+#else
+  *frequency = arm_cp15_get_counter_frequency();
+#endif
+
+#ifdef ARM_GENERIC_TIMER_USE_VIRTUAL
+  *irq = 27;
+#else
+  /* Non-secure physical timer interrupt */
+  *irq = 30;
+#endif
 }
 
-void arm_interrupt_facility_set_exception_handler(void)
+void bsp_start( void )
 {
-  AArch64_set_exception_handler(
-    AARCH64_EXCEPTION_SPx_IRQ,
-    _AArch64_Exception_interrupt_no_nest
-  );
-  AArch64_set_exception_handler(
-    AARCH64_EXCEPTION_SP0_IRQ,
-    _AArch64_Exception_interrupt_nest
-  );
+  bsp_interrupt_initialize();
 }

@@ -36,7 +36,7 @@
 #include <stm32h7/hal.h>
 
 #if STM32H743ZI_NUCLEO == 1
-__attribute__((weak)) static const stm32h7_uart_config stm32h7_usart3_config = {
+__attribute__((weak)) const stm32h7_uart_config stm32h7_usart3_config = {
   .gpio = {
     .regs = GPIOD,
     .config = {
@@ -51,7 +51,7 @@ __attribute__((weak)) static const stm32h7_uart_config stm32h7_usart3_config = {
   .device_index = 2
 };
 #else
-__attribute__((weak)) static const stm32h7_uart_config stm32h7_usart3_config = {
+__attribute__((weak)) const stm32h7_uart_config stm32h7_usart3_config = {
   .gpio = {
     .regs = GPIOB,
     .config = {

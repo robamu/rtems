@@ -31,19 +31,32 @@
 
 #include <stm32h7/hal.h>
 
-stm32h7_uart_context stm32h7_usart3_instance = {
-  .uart = {
-    .Instance = USART3,
-    .Init.BaudRate = BSP_CONSOLE_BAUD,
-    .Init.WordLength = UART_WORDLENGTH_8B,
-    .Init.StopBits = UART_STOPBITS_1,
-    .Init.Parity = UART_PARITY_NONE,
-    .Init.Mode = UART_MODE_TX_RX,
-    .Init.HwFlowCtl = UART_HWCONTROL_NONE,
-    .Init.OverSampling = UART_OVERSAMPLING_16,
-    .Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE,
-    .Init.ClockPrescaler = UART_PRESCALER_DIV1,
-    .AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT
-  },
-  .config = &stm32h7_usart3_config
+const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
+  .PeriphClockSelection = RCC_PERIPHCLK_RTC | RCC_PERIPHCLK_USART3
+    | RCC_PERIPHCLK_FDCAN | RCC_PERIPHCLK_USART1 | RCC_PERIPHCLK_I2C1
+    | RCC_PERIPHCLK_USB | RCC_PERIPHCLK_FMC | RCC_PERIPHCLK_RNG,
+  .PLL2.PLL2M = 3,
+  .PLL2.PLL2N = 48,
+  .PLL2.PLL2P = 1,
+  .PLL2.PLL2Q = 2,
+  .PLL2.PLL2R = 2,
+  .PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3,
+  .PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE,
+  .PLL2.PLL2FRACN = 0,
+  .PLL3.PLL3M = 25,
+  .PLL3.PLL3N = 192,
+  .PLL3.PLL3P = 2,
+  .PLL3.PLL3Q = 4,
+  .PLL3.PLL3R = 2,
+  .PLL3.PLL3RGE = RCC_PLL3VCIRANGE_0,
+  .PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE,
+  .PLL3.PLL3FRACN = 0,
+  .FmcClockSelection = RCC_FMCCLKSOURCE_PLL2,
+  .FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL,
+  .Usart234578ClockSelection = RCC_USART234578CLKSOURCE_D2PCLK1,
+  .Usart16ClockSelection = RCC_USART16CLKSOURCE_D2PCLK2,
+  .I2c123ClockSelection = RCC_I2C123CLKSOURCE_D2PCLK1,
+  .UsbClockSelection = RCC_USBCLKSOURCE_PLL3,
+  .RTCClockSelection = RCC_RTCCLKSOURCE_LSE,
+  .RngClockSelection = RCC_RNGCLKSOURCE_HSI48
 };

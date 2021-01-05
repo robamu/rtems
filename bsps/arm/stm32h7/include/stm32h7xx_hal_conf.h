@@ -21,6 +21,9 @@
 #ifndef __STM32H7xx_HAL_CONF_H
 #define __STM32H7xx_HAL_CONF_H
 
+#ifdef __rtems__
+#include <bspopts.h>
+#endif /* __rtems__ */
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -103,7 +106,13 @@
   *        (when HSE is used as system clock source, directly or through the PLL).  
   */
 #if !defined  (HSE_VALUE) 
-#define HSE_VALUE    ((uint32_t)25000000) /*!< Value of the External oscillator in Hz : FPGA case fixed to 60MHZ */
+#if STM32H743ZI_NUCLEO == 1
+/*!< External oscillator clock for the STM32H743ZI Nucleo */
+#define HSE_VALUE    ((uint32_t)8000000)
+#else
+/*!< Value of the External oscillator in Hz : FPGA case fixed to 60MHZ */
+#define HSE_VALUE    ((uint32_t)25000000)
+#endif
 #endif /* HSE_VALUE */
 
 #if !defined  (HSE_STARTUP_TIMEOUT)

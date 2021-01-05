@@ -31,19 +31,22 @@
 
 #include <stm32h7/hal.h>
 
-stm32h7_uart_context stm32h7_usart3_instance = {
-  .uart = {
-    .Instance = USART3,
-    .Init.BaudRate = BSP_CONSOLE_BAUD,
-    .Init.WordLength = UART_WORDLENGTH_8B,
-    .Init.StopBits = UART_STOPBITS_1,
-    .Init.Parity = UART_PARITY_NONE,
-    .Init.Mode = UART_MODE_TX_RX,
-    .Init.HwFlowCtl = UART_HWCONTROL_NONE,
-    .Init.OverSampling = UART_OVERSAMPLING_16,
-    .Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE,
-    .Init.ClockPrescaler = UART_PRESCALER_DIV1,
-    .AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT
-  },
-  .config = &stm32h7_usart3_config
+const RCC_OscInitTypeDef stm32h7_config_oscillator = {
+  .OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSE
+    | RCC_OSCILLATORTYPE_LSE | RCC_OSCILLATORTYPE_HSI48,
+  .HSEState = RCC_HSE_ON,
+  .LSEState = RCC_LSE_ON,
+  .HSIState = RCC_HSI_DIV1,
+  .HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT,
+  .HSI48State = RCC_HSI48_ON,
+  .PLL.PLLState = RCC_PLL_ON,
+  .PLL.PLLSource = RCC_PLLSOURCE_HSE,
+  .PLL.PLLM = 5,
+  .PLL.PLLN = 192,
+  .PLL.PLLP = 2,
+  .PLL.PLLQ = 12,
+  .PLL.PLLR = 2,
+  .PLL.PLLRGE = RCC_PLL1VCIRANGE_2,
+  .PLL.PLLVCOSEL = RCC_PLL1VCOWIDE,
+  .PLL.PLLFRACN = 0
 };

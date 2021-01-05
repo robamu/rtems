@@ -31,19 +31,4 @@
 
 #include <stm32h7/hal.h>
 
-stm32h7_uart_context stm32h7_usart3_instance = {
-  .uart = {
-    .Instance = USART3,
-    .Init.BaudRate = BSP_CONSOLE_BAUD,
-    .Init.WordLength = UART_WORDLENGTH_8B,
-    .Init.StopBits = UART_STOPBITS_1,
-    .Init.Parity = UART_PARITY_NONE,
-    .Init.Mode = UART_MODE_TX_RX,
-    .Init.HwFlowCtl = UART_HWCONTROL_NONE,
-    .Init.OverSampling = UART_OVERSAMPLING_16,
-    .Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE,
-    .Init.ClockPrescaler = UART_PRESCALER_DIV1,
-    .AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT
-  },
-  .config = &stm32h7_usart3_config
-};
+const uint32_t stm32h7_config_flash_latency = FLASH_LATENCY_4;

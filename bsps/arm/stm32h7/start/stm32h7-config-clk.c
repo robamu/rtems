@@ -31,19 +31,15 @@
 
 #include <stm32h7/hal.h>
 
-stm32h7_uart_context stm32h7_usart3_instance = {
-  .uart = {
-    .Instance = USART3,
-    .Init.BaudRate = BSP_CONSOLE_BAUD,
-    .Init.WordLength = UART_WORDLENGTH_8B,
-    .Init.StopBits = UART_STOPBITS_1,
-    .Init.Parity = UART_PARITY_NONE,
-    .Init.Mode = UART_MODE_TX_RX,
-    .Init.HwFlowCtl = UART_HWCONTROL_NONE,
-    .Init.OverSampling = UART_OVERSAMPLING_16,
-    .Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE,
-    .Init.ClockPrescaler = UART_PRESCALER_DIV1,
-    .AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT
-  },
-  .config = &stm32h7_usart3_config
+const RCC_ClkInitTypeDef stm32h7_config_clocks = {
+  .ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+    | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2
+    | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1,
+  .SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK,
+  .SYSCLKDivider = RCC_SYSCLK_DIV1,
+  .AHBCLKDivider = RCC_HCLK_DIV2,
+  .APB3CLKDivider = RCC_APB3_DIV2,
+  .APB1CLKDivider = RCC_APB1_DIV2,
+  .APB2CLKDivider = RCC_APB2_DIV2,
+  .APB4CLKDivider = RCC_APB4_DIV2
 };

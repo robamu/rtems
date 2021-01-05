@@ -29,52 +29,9 @@
 #include "config.h"
 #endif
 
-#ifdef __rtems__
-#include <bspopts.h>
-#endif
-
 #include <stm32h7/hal.h>
 
-
-const uint32_t stm32h7_config_pwr_regulator_voltagescaling =
-  PWR_REGULATOR_VOLTAGE_SCALE0;
-
-__attribute__((weak)) const RCC_OscInitTypeDef stm32h7_config_oscillator = {
-  .OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSE
-    | RCC_OSCILLATORTYPE_LSE | RCC_OSCILLATORTYPE_HSI48,
-  .HSEState = RCC_HSE_ON,
-  .LSEState = RCC_LSE_ON,
-  .HSIState = RCC_HSI_DIV1,
-  .HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT,
-  .HSI48State = RCC_HSI48_ON,
-  .PLL.PLLState = RCC_PLL_ON,
-  .PLL.PLLSource = RCC_PLLSOURCE_HSE,
-  .PLL.PLLM = 5,
-  .PLL.PLLN = 192,
-  .PLL.PLLP = 2,
-  .PLL.PLLQ = 12,
-  .PLL.PLLR = 2,
-  .PLL.PLLRGE = RCC_PLL1VCIRANGE_2,
-  .PLL.PLLVCOSEL = RCC_PLL1VCOWIDE,
-  .PLL.PLLFRACN = 0
-};
-
-__attribute__((weak)) const RCC_ClkInitTypeDef stm32h7_config_clocks = {
-  .ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-    | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2
-    | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1,
-  .SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK,
-  .SYSCLKDivider = RCC_SYSCLK_DIV1,
-  .AHBCLKDivider = RCC_HCLK_DIV2,
-  .APB3CLKDivider = RCC_APB3_DIV2,
-  .APB1CLKDivider = RCC_APB1_DIV2,
-  .APB2CLKDivider = RCC_APB2_DIV2,
-  .APB4CLKDivider = RCC_APB4_DIV2
-};
-
-const uint32_t stm32h7_config_flash_latency = FLASH_LATENCY_4;
-
-__attribute__((weak)) const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
+const RCC_PeriphCLKInitTypeDef stm32h7_config_peripheral_clocks = {
   .PeriphClockSelection = RCC_PERIPHCLK_RTC | RCC_PERIPHCLK_USART3
     | RCC_PERIPHCLK_FDCAN | RCC_PERIPHCLK_USART1 | RCC_PERIPHCLK_I2C1
     | RCC_PERIPHCLK_USB | RCC_PERIPHCLK_FMC | RCC_PERIPHCLK_RNG,

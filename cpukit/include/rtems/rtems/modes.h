@@ -38,11 +38,15 @@
  * worded better please post a report or patch to an RTEMS mailing list
  * or raise a bug report:
  *
- * https://docs.rtems.org/branches/master/user/support/bugs.html
+ * https://www.rtems.org/bugs.html
  *
- * For information on updating and regenerating please refer to:
+ * For information on updating and regenerating please refer to the How-To
+ * section in the Software Requirements Engineering chapter of the
+ * RTEMS Software Engineering manual.  The manual is provided as a part of
+ * a release.  For development sources please refer to the online
+ * documentation at:
  *
- * https://docs.rtems.org/branches/master/eng/req/howto.html
+ * https://docs.rtems.org
  */
 
 /* Generated from spec:/rtems/mode/if/header */
@@ -131,15 +135,16 @@ extern "C" {
  * @brief Maps the interrupt level to the associated processor-dependent task
  *   mode interrupt level.
  *
- * The Classic API supports 256 interrupt levels using the least significant
- * eight bits of the mode set.  On any particular processor variant, fewer than
- * 256 levels may be supported.  At least level 0 (all interrupts enabled) and
- * level 1 (interrupts disabled, on most architectures) are supported.
- *
  * @param _interrupt_level is the interrupt level to map.
  *
  * @return Returns the processor-dependent task mode interrupt level associated
  *   with the interrupt level.
+ *
+ * @par Notes
+ * The Classic API supports 256 interrupt levels using the least significant
+ * eight bits of the mode set.  On any particular processor variant, fewer than
+ * 256 levels may be supported.  At least level 0 (all interrupts enabled) and
+ * level 1 (interrupts disabled, on most architectures) are supported.
  */
 #define RTEMS_INTERRUPT_LEVEL( _interrupt_level ) \
   ( ( _interrupt_level ) & RTEMS_INTERRUPT_MASK )
@@ -151,6 +156,7 @@ extern "C" {
  *
  * @brief This task mode constant has the same value as #RTEMS_INTERRUPT_MASK.
  *
+ * @par Notes
  * This task mode constant is used by bindings from languages other than C and
  * C++.
  */
@@ -173,11 +179,12 @@ typedef uint32_t rtems_mode;
  * @brief Maps the interrupt level to the associated processor-dependent task
  *   mode interrupt level.
  *
- * This function is used by bindings from languages other than C and C++.
- *
  * @param level is the interrupt level to map.
  *
  * @return Returns RTEMS_INTERRUPT_LEVEL() for the interrupt level.
+ *
+ * @par Notes
+ * This function is used by bindings from languages other than C and C++.
  */
 rtems_mode rtems_interrupt_level_body( uint32_t level );
 

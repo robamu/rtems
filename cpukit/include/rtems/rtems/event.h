@@ -40,11 +40,15 @@
  * worded better please post a report or patch to an RTEMS mailing list
  * or raise a bug report:
  *
- * https://docs.rtems.org/branches/master/user/support/bugs.html
+ * https://www.rtems.org/bugs.html
  *
- * For information on updating and regenerating please refer to:
+ * For information on updating and regenerating please refer to the How-To
+ * section in the Software Requirements Engineering chapter of the
+ * RTEMS Software Engineering manual.  The manual is provided as a part of
+ * a release.  For development sources please refer to the online
+ * documentation at:
  *
- * https://docs.rtems.org/branches/master/eng/req/howto.html
+ * https://docs.rtems.org
  */
 
 /* Generated from spec:/rtems/event/if/header */
@@ -460,10 +464,6 @@ typedef uint32_t rtems_event_set;
 /**
  * @brief Receives or gets a system event set from the executing task.
  *
- * This directive performs the same actions as the rtems_event_receive()
- * directive except that it operates with a different set of events for each
- * task.
- *
  * @param event_in is the event set of interest.  Use #RTEMS_PENDING_EVENTS to
  *   get the pending events.
  *
@@ -475,6 +475,10 @@ typedef uint32_t rtems_event_set;
  * @param event_out is the pointer to an event set.  The received or pending
  *   events are stored in the referenced event set if the operation was
  *   successful.
+ *
+ * This directive performs the same actions as the rtems_event_receive()
+ * directive except that it operates with a different set of events for each
+ * task.
  */
 rtems_status_code rtems_event_system_receive(
   rtems_event_set  event_in,
@@ -581,6 +585,10 @@ static inline rtems_status_code rtems_event_transient_send( rtems_id id )
  *
  * @brief Sends the event set to the task.
  *
+ * @param id is the identifier of the target task to receive the event set.
+ *
+ * @param event_in is the event set to send.
+ *
  * This directive sends the event set, ``event_in``, to the target task
  * identified by ``id``.  Based upon the state of the target task, one of the
  * following situations applies:
@@ -596,6 +604,13 @@ static inline rtems_status_code rtems_event_transient_send( rtems_id id )
  * * The target task is not waiting for events, then the event set is posted
  *   and left pending.
  *
+ * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
+ *
+ * @retval ::RTEMS_INVALID_ID There was no task associated with the identifier
+ *   specified by ``id``.
+ *
+ * @par Notes
+ * @parblock
  * Events can be sent by tasks or an ISR.
  *
  * Specifying #RTEMS_SELF for ``id`` results in the event set being sent to the
@@ -615,15 +630,7 @@ static inline rtems_status_code rtems_event_transient_send( rtems_id id )
  * Sending an event set to a global task which does not reside on the local
  * node will generate a request telling the remote node to send the event set
  * to the appropriate task.
- *
- * @param id is the identifier of the target task to receive the event set.
- *
- * @param event_in is the event set to send.
- *
- * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
- *
- * @retval ::RTEMS_INVALID_ID There was no task associated with the identifier
- *   specified by ``id``.
+ * @endparblock
  */
 rtems_status_code rtems_event_send( rtems_id id, rtems_event_set event_in );
 
@@ -633,6 +640,18 @@ rtems_status_code rtems_event_send( rtems_id id, rtems_event_set event_in );
  * @ingroup RTEMSAPIClassicEvent
  *
  * @brief Receives or gets an event set from the calling task.
+ *
+ * @param event_in is the event set of interest.  Use #RTEMS_PENDING_EVENTS to
+ *   get the pending events.
+ *
+ * @param option_set is the option set.
+ *
+ * @param ticks is the timeout in clock ticks if the #RTEMS_WAIT option is set.
+ *   Use #RTEMS_NO_TIMEOUT to wait potentially forever.
+ *
+ * @param event_out is the pointer to an event set.  The received or pending
+ *   events are stored in the referenced event set if the operation was
+ *   successful.
  *
  * This directive can be used to
  *
@@ -676,6 +695,18 @@ rtems_status_code rtems_event_send( rtems_id id, rtems_event_set event_in );
  * * Receiving **any** of the input events is selected by the #RTEMS_EVENT_ANY
  *   option.
  *
+ * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
+ *
+ * @retval ::RTEMS_INVALID_ADDRESS The ``event_out`` parameter was NULL.
+ *
+ * @retval ::RTEMS_UNSATISFIED The events of interest were not immediately
+ *   available.
+ *
+ * @retval ::RTEMS_TIMEOUT The events of interest were not available within the
+ *   specified timeout interval.
+ *
+ * @par Notes
+ * @parblock
  * This directive shall be called by a task.  Calling this directive from
  * interrupt context is undefined behaviour.
  *
@@ -693,28 +724,7 @@ rtems_status_code rtems_event_send( rtems_id id, rtems_event_set event_in );
  * ``option_set`` parameter.  The pending events are returned and the event set
  * of the task is cleared.  If no events are pending then the
  * ::RTEMS_UNSATISFIED status code will be returned.
- *
- * @param event_in is the event set of interest.  Use #RTEMS_PENDING_EVENTS to
- *   get the pending events.
- *
- * @param option_set is the option set.
- *
- * @param ticks is the timeout in clock ticks if the #RTEMS_WAIT option is set.
- *   Use #RTEMS_NO_TIMEOUT to wait potentially forever.
- *
- * @param event_out is the pointer to an event set.  The received or pending
- *   events are stored in the referenced event set if the operation was
- *   successful.
- *
- * @retval ::RTEMS_SUCCESSFUL The requested operation was successful.
- *
- * @retval ::RTEMS_INVALID_ADDRESS The ``event_out`` parameter was NULL.
- *
- * @retval ::RTEMS_UNSATISFIED The events of interest were not immediately
- *   available.
- *
- * @retval ::RTEMS_TIMEOUT The events of interest were not available within the
- *   specified timeout interval.
+ * @endparblock
  */
 rtems_status_code rtems_event_receive(
   rtems_event_set  event_in,

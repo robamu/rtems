@@ -40,11 +40,15 @@
  * worded better please post a report or patch to an RTEMS mailing list
  * or raise a bug report:
  *
- * https://docs.rtems.org/branches/master/user/support/bugs.html
+ * https://www.rtems.org/bugs.html
  *
- * For information on updating and regenerating please refer to:
+ * For information on updating and regenerating please refer to the How-To
+ * section in the Software Requirements Engineering chapter of the
+ * RTEMS Software Engineering manual.  The manual is provided as a part of
+ * a release.  For development sources please refer to the online
+ * documentation at:
  *
- * https://docs.rtems.org/branches/master/eng/req/howto.html
+ * https://docs.rtems.org
  */
 
 /* Generated from spec:/rtems/basedefs/if/header */
@@ -289,10 +293,10 @@ extern "C" {
  *
  * @brief Declares a global symbol with the name.
  *
- * This macro must be placed at file scope.
- *
  * @param _name is the name of the global symbol.  It shall be a valid
  *   designator.
+ *
+ * This macro must be placed at file scope.
  */
 #define RTEMS_DECLARE_GLOBAL_SYMBOL( _name ) extern char _name[]
 
@@ -350,11 +354,11 @@ extern "C" {
  *
  * @brief Gets the pointer reference type.
  *
- * The reference type idea is based on libHX by Jan Engelhardt.
- *
  * @param _level is the pointer indirection level expressed in *.
  *
  * @param _target is the reference target type.
+ *
+ * The reference type idea is based on libHX by Jan Engelhardt.
  *
  * @return Returns the type of a pointer reference of the specified level to
  *   the specified type.
@@ -597,9 +601,9 @@ extern "C" {
  * @brief Obfuscates the variable so that the compiler cannot perform
  *   optimizations based on the variable value.
  *
- * The variable must be simple enough to fit into a register.
- *
  * @param _var is the variable to obfuscate.
+ *
+ * The variable must be simple enough to fit into a register.
  */
 #if defined(__GNUC__)
   #define RTEMS_OBFUSCATE_VARIABLE( _var ) __asm__( "" : "+r" ( _var ) )
@@ -913,8 +917,6 @@ extern "C" {
  *
  * @brief Defines a global symbol with the name and value.
  *
- * This macro shall be placed at file scope.
- *
  * @param _name is the user defined name of the symbol.  The name shall be a
  *   valid designator.  On the name a macro expansion is performed and
  *   afterwards it is stringified.
@@ -922,6 +924,8 @@ extern "C" {
  * @param _value is the value of the symbol.  On the value a macro expansion is
  *   performed and afterwards it is stringified.  It shall expand to an integer
  *   expression understood by the assembler.
+ *
+ * This macro shall be placed at file scope.
  */
 #if defined(__USER_LABEL_PREFIX__)
   #define RTEMS_DEFINE_GLOBAL_SYMBOL( _name, _value ) \

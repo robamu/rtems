@@ -1,16 +1,7 @@
 /* SPDX-License-Identifier: BSD-2-Clause */
 
-/**
- * @file
- *
- * @ingroup RTEMSBSPsAArch64XilinxZynqMP
- *
- * @brief This header file provides the BSP's IRQ definitions.
- */
-
 /*
- * Copyright (C) 2020 On-Line Applications Research Corporation (OAR)
- * Written by Kinsey Moore <kinsey.moore@oarcorp.com>
+ * Copyright (C) 2020 embedded brains GmbH (http://www.embedded-brains.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,39 +25,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LIBBSP_AARCH64_XILINX_ZYNQMP_IRQ_H
-#define LIBBSP_AARCH64_XILINX_ZYNQMP_IRQ_H
+#ifndef LIBBSP_ARM_IMXRT_IMXRT_LPSPI_H
+#define LIBBSP_ARM_IMXRT_IMXRT_LPSPI_H
 
-#ifndef ASM
-
-#include <rtems/irq.h>
-#include <rtems/irq-extension.h>
-
-#include <dev/irq/arm-gic-irq.h>
+#include <sys/ioccom.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-#define BSP_INTERRUPT_VECTOR_MIN 0
-#define BSP_INTERRUPT_VECTOR_MAX 1023
+#define IMXRT_LPSPI_IOC_MAGIC 's'
 
-/* Interrupts vectors */
-#define BSP_TIMER_VIRT_PPI 27
-#define BSP_TIMER_PHYS_NS_PPI 30
-#define ZYNQMP_IRQ_UART_0 54
-#define ZYNQMP_IRQ_UART_1 53
-#define ZYNQMP_IRQ_ETHERNET_0 89
-#define ZYNQMP_IRQ_ETHERNET_1 91
-#define ZYNQMP_IRQ_ETHERNET_2 93
-#define ZYNQMP_IRQ_ETHERNET_3 95
-
-/** @} */
+/**
+ * @brief Fetch the raw registers.
+ *
+ * This allows to do some special operations. Note that if you do something
+ * fancy, you should lock the hardware by obtaining the bus with the
+ * SPI_BUS_OBTAIN ioctl first. With that, the normal driver can't be used by
+ * other tasks. Also note that you should leave the registers in a clean state
+ * before releasing the bus again.
+ */
+#define IMXRT_LPSPI_GET_REGISTERS _IOR(IMXRT_LPSPI_IOC_MAGIC, 0, LPSPI_Type *)
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* ASM */
-
-#endif /* LIBBSP_AARCH64_XILINX_ZYNQMP_IRQ_H */
+#endif /* LIBBSP_ARM_IMXRT_IMXRT_LPSPI_H */

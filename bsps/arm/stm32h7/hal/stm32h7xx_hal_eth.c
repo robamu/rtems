@@ -2647,7 +2647,7 @@ static void ETH_MAC_MDIO_ClkConfig(ETH_HandleTypeDef *heth)
   */
 static void ETH_DMATxDescListInit(ETH_HandleTypeDef *heth)
 {
-#ifndef __rtems__
+//#ifndef __rtems__
   ETH_DMADescTypeDef *dmatxdesc;
   uint32_t i;
 
@@ -2674,7 +2674,7 @@ static void ETH_DMATxDescListInit(ETH_HandleTypeDef *heth)
 
   /* Set Transmit Descriptor Tail pointer */
   WRITE_REG(heth->Instance->DMACTDTPR, (uint32_t) heth->Init.TxDesc);
-#endif /* __rtems__ */
+//#endif /* __rtems__ */
 }
 
 /**
@@ -2686,7 +2686,7 @@ static void ETH_DMATxDescListInit(ETH_HandleTypeDef *heth)
   */
 static void ETH_DMARxDescListInit(ETH_HandleTypeDef *heth)
 {
-#ifndef __rtems__
+//#ifndef __rtems__
   ETH_DMADescTypeDef *dmarxdesc;
   uint32_t i;
 
@@ -2719,7 +2719,7 @@ static void ETH_DMARxDescListInit(ETH_HandleTypeDef *heth)
 
   /* Set Receive Descriptor Tail pointer Address */
   WRITE_REG(heth->Instance->DMACRDTPR, ((uint32_t)(heth->Init.RxDesc + (((uint32_t)(ETH_RX_DESC_CNT - 1))*sizeof(ETH_DMADescTypeDef)))));
-#endif /* __rtems__ */
+//#endif /* __rtems__ */
 }
 
 /**

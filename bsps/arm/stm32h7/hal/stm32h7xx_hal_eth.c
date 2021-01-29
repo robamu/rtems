@@ -361,10 +361,10 @@ HAL_StatusTypeDef HAL_ETH_Init(ETH_HandleTypeDef *heth)
   /*------------------ MAC, MTL and DMA default Configuration ----------------*/
   ETH_MACDMAConfig(heth);
 
-#ifndef __rtems__
+//#ifndef __rtems__
   /* SET DSL to 64 bit */
   MODIFY_REG(heth->Instance->DMACCR, ETH_DMACCR_DSL, ETH_DMACCR_DSL_64BIT);
-#endif /* __rtems__ */
+//#endif /* __rtems__ */
 
   /* Set Receive Buffers Length (must be a multiple of 4) */
   if ((heth->Init.RxBuffLen % 0x4U) != 0x0U)

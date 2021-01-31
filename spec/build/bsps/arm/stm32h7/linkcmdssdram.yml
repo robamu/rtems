@@ -30,11 +30,6 @@ do-configure: |
   bsp_align_text_and_rodata_end_to_power_of_2 = 1;
   """
 
-  if conf.env.STM32H7_ADD_LWIP:
-      content += """/* STM32H7_ADD_LWIP set to True */
-  INCLUDE linkcmds.lwip
-  """
-
   content += """
   INCLUDE linkcmds.armv7m
   """

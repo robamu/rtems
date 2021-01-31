@@ -33,6 +33,12 @@ do-configure: |
   content += """
   INCLUDE linkcmds.armv7m
   """
+
+  if conf.env.STM32H7_ADD_LWIP:
+      content += """
+  INCLUDE linkcmds.lwip
+  """
+
   f = conf.bldnode.make_node(
       conf.env.VARIANT + "/linkcmds.flash"
   )

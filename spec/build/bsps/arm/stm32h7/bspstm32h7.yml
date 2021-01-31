@@ -245,6 +245,8 @@ links:
 - role: build-dependency
   uid: ../../optconsoleirq
 - role: build-dependency
+  uid: optlwip
+- role: build-dependency
   uid: ../grp
 - role: build-dependency
   uid: ../start

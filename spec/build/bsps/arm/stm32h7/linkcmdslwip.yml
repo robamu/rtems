@@ -2,18 +2,21 @@ build-type: script
 do-build: |
   bld.install_as("${BSP_LIBDIR}/linkcmds.lwip", "linkcmds.lwip")
 do-configure: |
-  content = """
-  SECTION {
+  content = """SECTIONS {
+      /* This places the DMA descriptors for lwIP at the start of SRAM3.
+      The MPU still needs to be configured for the DMA descriptor regions to be 
+      bufferable, non-cacheable, non-shareable (first 256 bytes) */
       .lwip_sec (NOLOAD) : ALIGN_WITH_INPUT {
           . = ABSOLUTE(0x30040000);
-      *(.RxDecripSection)
+          *(.RxDecripSection)
           . = ABSOLUTE(0x30040060);
-      *(.TxDecripSection)
+          *(.TxDecripSection)
           . = ABSOLUTE(0x30040200);
-      *(.RxArraySection)
-    } >SRAM_3 AT> REGION_TEXT_LOAD
+          *(.RxArraySection)
+      } >SRAM_3 AT> REGION_TEXT_LOAD
   }
-
+  """
+  
   f = conf.bldnode.make_node(
       conf.env.VARIANT + "/linkcmds.lwip"
   )

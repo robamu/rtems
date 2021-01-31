@@ -35,7 +35,7 @@ do-configure: |
   """
 
   if conf.env.STM32H7_ADD_LWIP:
-      content += """
+      content += """/* STM32H7_ADD_LWIP set to True */
   INCLUDE linkcmds.lwip
   """
 

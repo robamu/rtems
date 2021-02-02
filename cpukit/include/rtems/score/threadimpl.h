@@ -814,14 +814,18 @@ RTEMS_INLINE_ROUTINE Priority_Control _Thread_Priority_highest(
 }
 
 /**
- * @brief Gets object information for the object id.
+ * @brief Gets the thread object information for the API of the object
+ *   identifier.
  *
- * @param id The id of the object information.
+ * @param id is an object identifier which defines the API to get the
+ *   associated thread objects information.
  *
- * @retval pointer The object information for this id.
- * @retval NULL The object id is not valid.
+ * @retval NULL The object identifier had an invalid API.
+ *
+ * @return Returns the thread object information associated with the API of the
+ *   object identifier.
  */
-RTEMS_INLINE_ROUTINE Objects_Information *_Thread_Get_objects_information(
+RTEMS_INLINE_ROUTINE Objects_Information *_Thread_Get_objects_information_by_id(
   Objects_Id id
 )
 {
@@ -840,6 +844,30 @@ RTEMS_INLINE_ROUTINE Objects_Information *_Thread_Get_objects_information(
    * since this will be done by the object get methods.
    */
   return _Objects_Information_table[ the_api ][ 1 ];
+}
+
+/**
+ * @brief Gets the thread object information of the thread.
+ *
+ * @param the_thread is the thread to get the thread object information.
+ *
+ * @return Returns the thread object information of the thread.
+ */
+RTEMS_INLINE_ROUTINE Thread_Information *_Thread_Get_objects_information(
+  Thread_Control *the_thread
+)
+{
+  size_t              the_api;
+  Thread_Information *information;
+
+  the_api = (size_t) _Objects_Get_API( the_thread->Object.id );
+  _Assert( _Objects_Is_api_valid( the_api ) );
+
+  information = (Thread_Information *)
+    _Objects_Information_table[ the_api ][ 1 ];
+  _Assert( information != NULL );
+
+  return information;
 }
 
 /**

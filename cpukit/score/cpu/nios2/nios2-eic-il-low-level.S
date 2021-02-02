@@ -41,66 +41,78 @@
 	.section	.text
 
 	.extern	_Per_CPU_Information
-	.extern	_Thread_Dispatch_disable_level
-	.extern	_Nios2_Thread_dispatch_disabled
 	.extern	_Nios2_ISR_Status_interrupts_disabled
 
-	.globl	_Nios2_ISR_Dispatch_with_shadow_non_preemptive
+	.globl	_Nios2_ISR_Dispatch_with_shadow_register_set
 
-_Nios2_ISR_Dispatch_with_shadow_non_preemptive:
+_Nios2_ISR_Dispatch_with_shadow_register_set:
 
 	/* Load thread dispatch disable level */
-	ldw	r16, %gprel(_Thread_Dispatch_disable_level)(gp)
+	ldw	r16, %gprel(_Per_CPU_Information + PER_CPU_THREAD_DISPATCH_DISABLE_LEVEL)(gp)
+
+	/* Read status */
+	rdctl	r18, status
 
 	/* Load high level handler address and argument */
 	ldw	r8, 4(et)
 	ldw	r4, 8(et)
 
 	/* Increment and store thread dispatch disable level */
-	addi	r9, r16, 1
-	stw	r9, %gprel(_Thread_Dispatch_disable_level)(gp)
+	addi	r17, r16, 1
+	stw	r17, %gprel(_Per_CPU_Information + PER_CPU_THREAD_DISPATCH_DISABLE_LEVEL)(gp)
+
+	/*
+	 * Enable higher level interrupts.  This is safe since status.RSIE is
+	 * always 0 and thread dispatching is disabled right above.  Higher
+	 * priority interrupts shall not share shadow register sets with lower
+	 * priority interrupts.
+	 */
+	ori	r5, r18, 1
+	wrctl	status, r5
 
 	/* Call high level handler with argument */
 	callr	r8
 
-	/* Load thread dispatch necessary */
+	/* Load the thread dispatch necessary indicator */
 	ldb	r12, %gprel(_Per_CPU_Information + PER_CPU_DISPATCH_NEEDED)(gp)
 
-	/* Load Nios II specific thread dispatch disabled */
-	ldw	r13, %gprel(_Nios2_Thread_dispatch_disabled)(gp)
-
-	/* Read status */
-	rdctl	r14, status
+	/* Load the thread dispatch after ISR disable indicator */
+	ldw	r13, %gprel(_Per_CPU_Information + PER_CPU_ISR_DISPATCH_DISABLE)(gp)
 
 	/* Fix return address */
 	subi	ea, ea, 4
 
 	/*
-	 * Restore the thread dispatch disable level.  We must do this before
-	 * we return to the normal register set, because otherwise we have
-	 * problems if someone deletes or restarts the interrupted thread while
-	 * we are in the thread dispatch helper.
+	 * If the current thread dispatch disable level (r17) is one, then
+	 * negate the thread dispatch necessary indicator, otherwise the value
+	 * is irrelevant.  Or it with the previous thread dispatch disable
+	 * level value (r16).  The r15 which will be used as a status to
+	 * determine if a thread dispatch is necessary and allowed.
 	 */
-	stw	r16, %gprel(_Thread_Dispatch_disable_level)(gp)
+	xor	r12, r17, r12
+	or	r15, r12, r16
 
-	/* Is thread dispatch allowed? */
-	bne	r16, zero, no_thread_dispatch
+	/*
+	 * Get the previous register set from r18.  If it is zero, then this is
+	 * the outermost interrupt.  Or it to the thread dispatch status (r15).
+	 */
+	andhi	r12, r18, 0x3f
+	or	r15, r12, r15
 
-	/* Is thread dispatch necessary? */
-	beq	r12, zero, no_thread_dispatch
+	/*
+	 * Or the thread dispatch after ISR disable indicator (r13) to the
+	 * thread dispatch status (r15).
+	 */
+	or	r15, r13, r15
 
-	/* Is outermost interrupt? */
-	andhi	r14, r14, 0x3f
-	bne	r14, zero, no_thread_dispatch
-
-	/* Is Nios II specific thread dispatch allowed? */
-	bne	r13, zero, no_thread_dispatch
+	/* Is a thread dispatch necessary and allowed? */
+	bne	r15, zero, no_thread_dispatch
 
 	/* Obtain stack frame in normal register set */
 	rdprs	r15, sp, -FRAME_SIZE
 
-	/* Disable Nios II specific thread dispatch */
-	stw	r12, %gprel(_Nios2_Thread_dispatch_disabled)(gp)
+	/* Disable thread dispatch after ISR */
+	stw	r17, %gprel(_Per_CPU_Information + PER_CPU_ISR_DISPATCH_DISABLE)(gp)
 
 	/* Save context */
 	stw	sstatus, FRAME_OFFSET_STATUS(r15)
@@ -113,12 +125,15 @@ _Nios2_ISR_Dispatch_with_shadow_non_preemptive:
 	/* Update stack pointer in normal register set */
 	wrprs	sp, r15
 
+	/* Jump to thread dispatch helper */
+	eret
+
 no_thread_dispatch:
 
-	/*
-	 * Return to thread dispatch helper, interrupted thread or interrupted
-	 * lower level interrupt service routine.
-	 */
+	/* Restore the thread dispatch disable level */
+	stw	r16, %gprel(_Per_CPU_Information + PER_CPU_THREAD_DISPATCH_DISABLE_LEVEL)(gp)
+
+	/* Return to interrupted context */
 	eret
 
 thread_dispatch_helper:
@@ -143,9 +158,26 @@ thread_dispatch_helper:
 	stw	r14, FRAME_OFFSET_R14(sp)
 	stw	r15, FRAME_OFFSET_R15(sp)
 
+	/*
+	 * Disable interrupts (1).
+	 *
+	 * We have the following invariants:
+	 *   1. status.RSIE == 0: thread context initialization
+	 *   2. status.CRS == 0: thread context initialization
+	 *   3. status.PRS: arbitrary
+	 *   4. status.IL < interrupt disable IL: else we would not be here
+	 *   5. status.IH == 0: thread context initialization
+	 *   6. status.U == 0: thread context initialization
+	 *   7. status.PIE == 1: thread context initialization
+	 * Thus we can use a constant to disable interrupts.
+	 */
+	movi	r5, %lo(_Nios2_ISR_Status_interrupts_disabled)
+	wrctl	status, r5
+
 do_thread_dispatch:
 
-	call	_Thread_Dispatch
+	addi	r4, gp, %gprel(_Per_CPU_Information)
+	call	_Thread_Do_dispatch
 
 	/* Restore some volatile registers */
 	ldw	ra, FRAME_OFFSET_RA(sp)
@@ -162,19 +194,7 @@ do_thread_dispatch:
 	ldw	r11, FRAME_OFFSET_R11(sp)
 	ldw	r12, FRAME_OFFSET_R12(sp)
 
-	/*
-	 * Disable interrupts.
-	 *
-	 * We have the following invariants:
-	 *   1. status.RSIE == 0: thread context initialization
-	 *   2. status.CRS == 0: thread context initialization
-	 *   3. status.PRS: arbitrary
-	 *   4. status.IL < interrupt disable IL: else we would not be here
-	 *   5. status.IH == 0: thread context initialization
-	 *   6. status.U == 0: thread context initialization
-	 *   7. status.PIE == 1: thread context initialization
-	 * Thus we can use a constant to disable interrupts.
-	 */
+	/* Disable interrupts, see (1) */
 	rdctl	r14, status
 	movi	r15, %lo(_Nios2_ISR_Status_interrupts_disabled)
 	wrctl	status, r15
@@ -183,10 +203,10 @@ do_thread_dispatch:
 	ldb	r13, %gprel(_Per_CPU_Information + PER_CPU_DISPATCH_NEEDED)(gp)
 
 	/* Is thread dispatch necessary? */
-	bne	r13, zero, enable_interrupts_before_thread_dispatch
+	bne	r13, zero, prepare_thread_dispatch
 
-	/* Enable Nios II specific thread dispatch */
-	stw	zero, %gprel(_Nios2_Thread_dispatch_disabled)(gp)
+	/* Enable thread dispatch after ISR */
+	stw	zero, %gprel(_Per_CPU_Information + PER_CPU_ISR_DISPATCH_DISABLE)(gp)
 
 	/* Restore remaining volatile register */
 	ldw	r13, FRAME_OFFSET_R13(sp)
@@ -206,9 +226,14 @@ do_thread_dispatch:
 	/* Return to interrupted thread */
 	eret
 
-enable_interrupts_before_thread_dispatch:
+prepare_thread_dispatch:
 
-	/* Restore status */
-	wrctl	status, r14
+	/* Disable thread dispatching */
+	movi	r4, 1
+	stw	r4, %gprel(_Per_CPU_Information + PER_CPU_ISR_DISPATCH_DISABLE)(gp)
+	stw	r4, %gprel(_Per_CPU_Information + PER_CPU_THREAD_DISPATCH_DISABLE_LEVEL)(gp)
+
+	/* Set interrupt level argument for _Thread_Do_dispatch() */
+	mov	r5, r15
 
 	br	do_thread_dispatch

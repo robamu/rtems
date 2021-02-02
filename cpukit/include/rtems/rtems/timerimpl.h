@@ -117,9 +117,9 @@ RTEMS_INLINE_ROUTINE bool _Timer_Is_interval_class(
   Timer_Classes the_class
 )
 {
-  Timer_Classes mask =
-    TIMER_CLASS_BIT_NOT_DORMANT | TIMER_CLASS_BIT_TIME_OF_DAY;
+  int mask;
 
+  mask = TIMER_CLASS_BIT_NOT_DORMANT | TIMER_CLASS_BIT_TIME_OF_DAY;
   return ( the_class & mask ) == TIMER_CLASS_BIT_NOT_DORMANT;
 }
 
@@ -127,9 +127,9 @@ RTEMS_INLINE_ROUTINE bool _Timer_Is_on_task_class(
   Timer_Classes the_class
 )
 {
-  Timer_Classes mask =
-    TIMER_CLASS_BIT_NOT_DORMANT | TIMER_CLASS_BIT_ON_TASK;
+  int mask;
 
+  mask = TIMER_CLASS_BIT_NOT_DORMANT | TIMER_CLASS_BIT_ON_TASK;
   return ( the_class & mask ) == mask;
 }
 
@@ -137,7 +137,7 @@ RTEMS_INLINE_ROUTINE Per_CPU_Watchdog_index _Timer_Watchdog_header_index(
   Timer_Classes the_class
 )
 {
-  return ( the_class & TIMER_CLASS_BIT_TIME_OF_DAY );
+  return (Per_CPU_Watchdog_index) ( the_class & TIMER_CLASS_BIT_TIME_OF_DAY );
 }
 
 RTEMS_INLINE_ROUTINE Watchdog_Interval _Timer_Get_CPU_ticks(

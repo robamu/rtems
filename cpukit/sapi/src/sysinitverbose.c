@@ -61,10 +61,12 @@ SYSINIT_VERBOSE( ZERO_MEMORY );
 SYSINIT_VERBOSE( ISR_STACK );
 SYSINIT_VERBOSE( PER_CPU_DATA );
 SYSINIT_VERBOSE( SBRK );
+SYSINIT_VERBOSE( STACK_ALLOCATOR );
 SYSINIT_VERBOSE( WORKSPACE );
 SYSINIT_VERBOSE( MALLOC );
 SYSINIT_VERBOSE( BSP_START );
 SYSINIT_VERBOSE( CPU_COUNTER );
+SYSINIT_VERBOSE( TARGET_HASH );
 SYSINIT_VERBOSE( INITIAL_EXTENSIONS );
 SYSINIT_VERBOSE( MP_EARLY );
 SYSINIT_VERBOSE( DATA_STRUCTURES );
@@ -233,9 +235,17 @@ static void _Sysinit_Verbose_SBRK( void )
   }
 }
 
+static void _Sysinit_Verbose_STACK_ALLOCATOR( void )
+{
+  if ( !SYSINIT_IS_ADJACENT( SBRK, STACK_ALLOCATOR ) ) {
+    _Sysinit_Print_free_memory();
+    printk( "sysinit: STACK_ALLOCATOR: done\n" );
+  }
+}
+
 static void _Sysinit_Verbose_WORKSPACE( void )
 {
-  if ( !SYSINIT_IS_ADJACENT( SBRK, WORKSPACE ) ) {
+  if ( !SYSINIT_IS_ADJACENT( STACK_ALLOCATOR, WORKSPACE ) ) {
     _Sysinit_Print_free_memory();
     printk( "sysinit: WORKSPACE: done\n" );
   }
@@ -263,9 +273,16 @@ static void _Sysinit_Verbose_CPU_COUNTER( void )
   }
 }
 
+static void _Sysinit_Verbose_TARGET_HASH( void )
+{
+  if ( !SYSINIT_IS_ADJACENT( CPU_COUNTER, TARGET_HASH ) ) {
+    printk( "sysinit: TARGET_HASH: done\n" );
+  }
+}
+
 static void _Sysinit_Verbose_INITIAL_EXTENSIONS( void )
 {
-  if ( !SYSINIT_IS_ADJACENT( CPU_COUNTER, INITIAL_EXTENSIONS ) ) {
+  if ( !SYSINIT_IS_ADJACENT( TARGET_HASH, INITIAL_EXTENSIONS ) ) {
     printk( "sysinit: INITIAL_EXTENSIONS: done\n" );
   }
 }

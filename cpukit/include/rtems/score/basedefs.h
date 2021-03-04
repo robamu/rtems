@@ -10,7 +10,7 @@
 /*
  * Copyright (C) 2014 Paval Pisa
  * Copyright (C) 2011, 2013 On-Line Applications Research Corporation (OAR)
- * Copyright (C) 2009, 2020 embedded brains GmbH (http://www.embedded-brains.de)
+ * Copyright (C) 2009, 2021 embedded brains GmbH (http://www.embedded-brains.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -154,6 +154,25 @@ extern "C" {
   #define RTEMS_ALIGNED( _alignment ) __attribute__(( __aligned__( _alignment ) ))
 #else
   #define RTEMS_ALIGNED( _alignment )
+#endif
+
+/* Generated from spec:/rtems/basedefs/if/alignof */
+
+/**
+ * @ingroup RTEMSAPIBaseDefs
+ *
+ * @brief Gets the alignment requirement of the type.
+ *
+ * @param _type_name is the type name to get the alignment requirement for.
+ *
+ * @return Returns the alignment requirement of the type.
+ */
+#if __cplusplus >= 201103L
+  #define RTEMS_ALIGNOF( _type_name ) alignof( _type_name )
+#elif __STDC_VERSION__ >= 201112L
+  #define RTEMS_ALIGNOF( _type_name ) _Alignof( _type_name )
+#else
+  #define RTEMS_ALIGNOF( _type_name ) sizeof( _type_name )
 #endif
 
 /* Generated from spec:/rtems/basedefs/if/alloc-align */
@@ -339,13 +358,13 @@ extern "C" {
 /**
  * @ingroup RTEMSAPIBaseDefs
  *
- * @brief Stringifies _x without expanding.
+ * @brief Stringifies the arguments without expanding them.
  *
- * @param _x is the token to stringify.
+ * @param ... are the arguments to stringify.
  *
- * @return Returns the stringification of the token _x.
+ * @return Returns the stringification of the arguments.
  */
-#define RTEMS_STRING( _x ) #_x
+#define RTEMS_STRING( ... ) #__VA_ARGS__
 
 /* Generated from spec:/rtems/basedefs/if/typeof-refx */
 
@@ -748,6 +767,17 @@ extern "C" {
   #define RTEMS_SECTION( _section )
 #endif
 
+/* Generated from spec:/rtems/basedefs/if/static-analysis */
+
+/**
+ * @ingroup RTEMSAPIBaseDefs
+ *
+ * @brief It is defined if a static analysis run is performed.
+ */
+#if defined(__COVERITY__)
+  #define RTEMS_STATIC_ANALYSIS
+#endif
+
 /* Generated from spec:/rtems/basedefs/if/static-assert */
 
 /**
@@ -902,13 +932,13 @@ extern "C" {
 /**
  * @ingroup RTEMSAPIBaseDefs
  *
- * @brief Stringifies the expansion of _x.
+ * @brief Stringifies the expansion of the arguments.
  *
- * @param _x is the token expand and stringify.
+ * @param ... are the arguments to expand and stringify.
  *
- * @return Returns the stringification of the expansion of token _x.
+ * @return Returns the stringification of the expansion of the arguments.
  */
-#define RTEMS_XSTRING( _x ) RTEMS_STRING( _x )
+#define RTEMS_XSTRING( ... ) RTEMS_STRING( __VA_ARGS__ )
 
 /* Generated from spec:/rtems/basedefs/if/define-global-symbol */
 

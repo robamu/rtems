@@ -42,12 +42,8 @@ typedef struct {
   rtems_asr_entry   handler;
   /** This field indicates if the task mode the signal will run with. */
   rtems_mode        mode_set;
-  /** This field indicates the signal set that is posted. */
-  rtems_signal_set  signals_posted;
   /** This field indicates the signal set that is pending. */
   rtems_signal_set  signals_pending;
-  /** This field indicates if nest level of signals being processed */
-  uint32_t          nest_level;
 }   ASR_Information;
 
 /** @} */

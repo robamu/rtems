@@ -46,9 +46,9 @@ extern "C" {
 
 /**
  * @brief Assertion similar to assert() controlled via RTEMS_DEBUG instead of
- * NDEBUG.
+ *   NDEBUG and static analysis runs.
  */
-#if defined( RTEMS_DEBUG )
+#if defined( RTEMS_DEBUG ) || defined( RTEMS_STATIC_ANALYSIS )
 
   /**
    * @brief Macro with method name used in assert output
@@ -99,13 +99,34 @@ extern "C" {
 #endif
 
 /**
- * @brief Like _Assert(), but only armed if RTEMS_SMP is defined.
+ * @brief Assert if unused return value is equal.
+ *
+ * Assert whether @a _var and @a _val are equal and ensure @a _var is
+ * marked as used when not building for debug.
+ *
+ * @param _var The return value to be checked.
+ * @param _val Indicates what @a _var is supposed to be.
  */
-#if defined( RTEMS_SMP )
-  #define _SMP_Assert( _e ) _Assert( _e )
-#else
-  #define _SMP_Assert( _e ) ( ( void ) 0 )
-#endif
+#define _Assert_Unused_variable_equals(_var,_val) \
+        do { \
+          _Assert((_var) == (_val)); \
+          (void) (_var); \
+        } while (0)
+
+/**
+ * @brief Assert if unused return value is not equal.
+ *
+ * Assert whether @a _var and @a _val are not equal and ensure @a _var
+ * is marked as used when not building for debug.
+ *
+ * @param _var The return value to be checked.
+ * @param _val Indicates what @a _var is not supposed to be.
+ */
+#define _Assert_Unused_variable_unequal(_var,_val) \
+         do { \
+          _Assert((_var) != (_val)); \
+           (void) (_var); \
+        } while (0)
 
 /**
  * @brief Returns true if thread dispatching is allowed.

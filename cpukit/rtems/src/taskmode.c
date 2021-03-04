@@ -21,13 +21,12 @@
 #endif
 
 #include <rtems/rtems/tasksdata.h>
-#include <rtems/rtems/asrimpl.h>
 #include <rtems/rtems/modesimpl.h>
 #include <rtems/rtems/signalimpl.h>
+#include <rtems/score/isrlevel.h>
 #include <rtems/score/schedulerimpl.h>
 #include <rtems/score/smpimpl.h>
 #include <rtems/score/threadimpl.h>
-#include <rtems/config.h>
 
 rtems_status_code rtems_task_mode(
   rtems_mode  mode_set,
@@ -35,12 +34,9 @@ rtems_status_code rtems_task_mode(
   rtems_mode *previous_mode_set
 )
 {
-  ISR_lock_Context    lock_context;
   Thread_Control     *executing;
   RTEMS_API_Control  *api;
   ASR_Information    *asr;
-  bool                preempt_enabled;
-  bool                needs_asr_dispatching;
   rtems_mode          old_mode;
 
   executing = _Thread_Get_executing();
@@ -50,11 +46,8 @@ rtems_status_code rtems_task_mode(
 
 #if defined(RTEMS_SMP)
   if (
-    ( mask & RTEMS_PREEMPT_MASK ) != 0
-      && !_Modes_Is_preempt( mode_set )
-      && !_Scheduler_Is_non_preempt_mode_supported(
-        _Thread_Scheduler_get_home( executing )
-      )
+    ( mask & RTEMS_PREEMPT_MASK ) != 0 &&
+    !_Modes_Is_preempt_mode_supported( mode_set, executing )
   ) {
     return RTEMS_NOT_IMPLEMENTED;
   }
@@ -62,11 +55,8 @@ rtems_status_code rtems_task_mode(
 
 #if defined(RTEMS_SMP) || CPU_ENABLE_ROBUST_THREAD_DISPATCH == TRUE
   if (
-    ( mask & RTEMS_INTERRUPT_MASK ) != 0
-      && _Modes_Get_interrupt_level( mode_set ) != 0
-#if CPU_ENABLE_ROBUST_THREAD_DISPATCH == FALSE
-      && _SMP_Need_inter_processor_interrupts()
-#endif
+    ( mask & RTEMS_INTERRUPT_MASK ) != 0 &&
+    !_Modes_Is_interrupt_level_supported( mode_set )
   ) {
     return RTEMS_NOT_IMPLEMENTED;
   }
@@ -93,66 +83,53 @@ rtems_status_code rtems_task_mode(
 
   *previous_mode_set = old_mode;
 
-  /*
-   *  These are generic thread scheduling characteristics.
-   */
-  preempt_enabled = false;
-  if ( mask & RTEMS_PREEMPT_MASK ) {
-    bool is_preempt_enabled = _Modes_Is_preempt( mode_set );
-
-    preempt_enabled = !executing->is_preemptible && is_preempt_enabled;
-    executing->is_preemptible = is_preempt_enabled;
+  if ( ( mask & RTEMS_TIMESLICE_MASK ) != 0 ) {
+    _Modes_Apply_timeslice_to_thread( mode_set, executing );
   }
 
-  if ( mask & RTEMS_TIMESLICE_MASK ) {
-    if ( _Modes_Is_timeslice(mode_set) ) {
-      executing->budget_algorithm = THREAD_CPU_BUDGET_ALGORITHM_RESET_TIMESLICE;
-      executing->cpu_time_budget =
-        rtems_configuration_get_ticks_per_timeslice();
-    } else
-      executing->budget_algorithm = THREAD_CPU_BUDGET_ALGORITHM_NONE;
+  if ( ( mask & RTEMS_INTERRUPT_MASK ) != 0 ) {
+    _ISR_Set_level( _Modes_Get_interrupt_level( mode_set ) );
   }
 
-  /*
-   *  Set the new interrupt level
-   */
-  if ( mask & RTEMS_INTERRUPT_MASK ) {
-    _Modes_Set_interrupt_level( mode_set );
-  }
+  if ( ( mask & ( RTEMS_ASR_MASK | RTEMS_PREEMPT_MASK ) ) != 0 ) {
+    bool             need_thread_dispatch;
+    ISR_lock_Context lock_context;
+    bool             previous_asr_is_enabled;
+    bool             previous_is_preemptible;
 
-  /*
-   *  This is specific to the RTEMS API
-   */
-  needs_asr_dispatching = false;
-  if ( mask & RTEMS_ASR_MASK ) {
-    bool is_asr_enabled = !_Modes_Is_asr_disabled( mode_set );
+    need_thread_dispatch = false;
 
     _Thread_State_acquire( executing, &lock_context );
 
-    if ( is_asr_enabled != asr->is_enabled ) {
-      asr->is_enabled = is_asr_enabled;
+    previous_asr_is_enabled = asr->is_enabled;
+    asr->is_enabled = !_Modes_Is_asr_disabled( mode_set );
 
-      if ( _ASR_Swap_signals( asr ) != 0 ) {
-        needs_asr_dispatching = true;
-        _Thread_Add_post_switch_action(
-          executing,
-          &api->Signal_action,
-          _Signal_Action_handler
-        );
-      }
+    if (
+      !previous_asr_is_enabled &&
+        asr->is_enabled &&
+        asr->signals_pending != 0
+    ) {
+      need_thread_dispatch = true;
+      _Thread_Append_post_switch_action( executing, &api->Signal_action );
     }
 
-    _Thread_State_release( executing, &lock_context );
-  }
+    previous_is_preemptible = executing->is_preemptible;
+    executing->is_preemptible = _Modes_Is_preempt( mode_set );
 
-  if ( preempt_enabled || needs_asr_dispatching ) {
-    Per_CPU_Control  *cpu_self;
+    if ( executing->is_preemptible && !previous_is_preemptible ) {
+      need_thread_dispatch = true;
+      _Scheduler_Schedule( executing );
+    }
 
-    cpu_self = _Thread_Dispatch_disable();
-    _Thread_State_acquire( executing, &lock_context );
-    _Scheduler_Schedule( executing );
-    _Thread_State_release( executing, &lock_context );
-    _Thread_Dispatch_direct( cpu_self );
+    if ( need_thread_dispatch ) {
+      Per_CPU_Control *cpu_self;
+
+      cpu_self = _Thread_Dispatch_disable_critical( &lock_context );
+      _Thread_State_release( executing, &lock_context );
+      _Thread_Dispatch_direct( cpu_self );
+    } else {
+      _Thread_State_release( executing, &lock_context );
+    }
   }
 
   return RTEMS_SUCCESSFUL;

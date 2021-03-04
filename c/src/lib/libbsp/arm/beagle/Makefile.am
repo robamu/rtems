@@ -37,6 +37,7 @@ librtemsbsp_a_LIBADD =
 
 # Shared
 librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/dev/getentropy/getentropy-cpucounter.c
+librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/start/gettargethash-default.c
 librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/start/bsp-fdt.c
 librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/start/bspfatal-default.c
 librtemsbsp_a_SOURCES += ../../../../../../bsps/shared/start/bspgetworkarea-default.c
@@ -76,8 +77,14 @@ librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/beagle/spi/spi.c
 # GPIO
 librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/beagle/gpio/bbb-gpio.c
 
+#pwmss shared
+librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/beagle/pwmss/pwmss.c
+
 #pwm
 librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/beagle/pwm/pwm.c
+
+#qep
+librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/beagle/qep/qep.c
 
 #RTC
 librtemsbsp_a_SOURCES += ../../../../../../bsps/arm/beagle/rtc/rtc.c

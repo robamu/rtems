@@ -34,7 +34,7 @@ static void _Thread_Create_idle_for_CPU( Per_CPU_Control *cpu )
 {
   Thread_Configuration  config;
   Thread_Control       *idle;
-  bool                  ok;
+  Status_Control        status;
 
   memset( &config, 0, sizeof( config ) );
   config.scheduler = _Scheduler_Get_by_CPU( cpu );
@@ -50,7 +50,7 @@ static void _Thread_Create_idle_for_CPU( Per_CPU_Control *cpu )
     config.scheduler->maximum_priority
   );
   config.budget_algorithm = THREAD_CPU_BUDGET_ALGORITHM_NONE;
-  config.name.name_u32 = _Objects_Build_name( 'I', 'D', 'L', 'E' );
+  config.name = _Objects_Build_name( 'I', 'D', 'L', 'E' );
   config.is_fp = CPU_IDLE_TASK_IS_FP;
   config.is_preemptible = true;
   config.stack_size = _Thread_Idle_stack_size
@@ -67,9 +67,8 @@ static void _Thread_Create_idle_for_CPU( Per_CPU_Control *cpu )
   idle = _Thread_Internal_allocate();
   _Assert( idle != NULL );
 
-  ok = _Thread_Initialize( &_Thread_Information, idle, &config );
-  _Assert( ok );
-  (void) ok;
+  status = _Thread_Initialize( &_Thread_Information, idle, &config );
+  _Assert_Unused_variable_equals( status, STATUS_SUCCESSFUL );
 
   /*
    *  WARNING!!! This is necessary to "kick" start the system and

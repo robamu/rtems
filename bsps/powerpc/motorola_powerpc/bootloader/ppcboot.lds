@@ -38,7 +38,9 @@ SECTIONS
     BYTE(0x75); BYTE(0x78); /* Partition name */
     . = 0x400;
     *(.text)
+    *(.text*)
     *(.sdata2)
+    *(.sdata2*)
     *(.rodata)
     *(.rodata*)
   }
@@ -71,13 +73,17 @@ SECTIONS
     *(.data)
     *(.data*)
     *(.sdata)
+    *(.sdata*)
     . = ALIGN(4);
     _data_end = .;
   }
   .bss :
   {
     *(.sbss)
+    *(.sbss*)
     *(.bss)
+    *(.bss*)
+    *(COMMON)
     . = ALIGN(4);
     _bss_end = .;
   }
@@ -95,7 +101,7 @@ SECTIONS
 
   /DISCARD/ : 
   {
-    *(.comment)
+    *(.comment*)
+    *(.debug*)
   }
 }
-

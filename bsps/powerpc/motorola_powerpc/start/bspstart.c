@@ -27,6 +27,7 @@
 #include <bsp/pci.h>
 #include <bsp/openpic.h>
 #include <bsp/irq.h>
+#include <bsp/irq-generic.h>
 #include <libcpu/bat.h>
 #include <libcpu/pte121.h>
 #include <libcpu/cpuIdent.h>
@@ -42,6 +43,9 @@ extern unsigned get_L2CR(void);
 extern void set_L2CR(unsigned);
 extern Triv121PgTbl BSP_pgtbl_setup(unsigned int *);
 extern void			BSP_pgtbl_activate(Triv121PgTbl);
+
+#define PPC_MIN_BAT_SIZE (128 * 1024)
+static char cc_memory[PPC_MIN_BAT_SIZE] RTEMS_ALIGNED(PPC_MIN_BAT_SIZE);
 
 SPR_RW(SPRG1)
 
@@ -334,10 +338,8 @@ static void bsp_early( void )
    */
   bsp_clicks_per_usec 	 = BSP_bus_frequency/(BSP_time_base_divisor * 1000);
 
-  /*
-   * Initalize RTEMS IRQ system
-   */
-  BSP_rtems_irq_mng_init(0);
+  /* Initialize interrupt support */
+  bsp_interrupt_initialize();
 
   /* Activate the page table mappings only after
    * initializing interrupts because the irq_mng_init()
@@ -351,6 +353,9 @@ static void bsp_early( void )
     /* finally, switch off DBAT3 */
     setdbat(3, 0, 0, 0, 0);
   }
+
+  setdbat(3, (intptr_t) &cc_memory[0], (intptr_t) &cc_memory[0], PPC_MIN_BAT_SIZE, IO_PAGE);
+  rtems_cache_coherent_add_area(&cc_memory[0], PPC_MIN_BAT_SIZE);
 
 #if defined(DEBUG_BATS)
   ShowBATS();

@@ -43,6 +43,35 @@
 
 #include <rtems/score/threadimpl.h>
 
+T_thread_timer_state
+T_get_thread_timer_state(uint32_t id)
+{
+	Thread_Control *the_thread;
+	ISR_lock_Context lock_context;
+	T_thread_timer_state state;
+
+	the_thread = _Thread_Get(id, &lock_context);
+	if (the_thread == NULL) {
+		return T_THREAD_TIMER_NO_THREAD;
+	}
+
+	switch (_Watchdog_Get_state(&the_thread->Timer.Watchdog)) {
+		case WATCHDOG_SCHEDULED_BLACK:
+		case WATCHDOG_SCHEDULED_RED:
+			state = T_THREAD_TIMER_SCHEDULED;
+			break;
+		case WATCHDOG_PENDING:
+			state = T_THREAD_TIMER_PENDING;
+			break;
+		default:
+			state = T_THREAD_TIMER_INACTIVE;
+			break;
+	}
+
+	_ISR_lock_ISR_enable(&lock_context);
+	return state;
+}
+
 Objects_Maximum
 T_objects_count(Objects_APIs api, uint16_t cls)
 {
@@ -380,4 +409,58 @@ T_check_rtems_timers(T_event event, const char *name)
 	default:
 		break;
 	};
+}
+
+void *
+T_seize_objects(rtems_status_code (*create)(void *, uint32_t *), void *arg)
+{
+	void *objects;
+
+	objects = NULL;
+
+	while (true) {
+		rtems_status_code sc;
+		rtems_id id;
+
+		id = 0;
+		sc = (*create)(arg, &id);
+
+		if (sc == RTEMS_SUCCESSFUL) {
+			const Objects_Information *info;
+			Objects_Control *obj;
+
+			info = _Objects_Get_information_id(id);
+			T_quiet_assert_not_null(info);
+			obj = _Objects_Get_no_protection(id, info);
+			T_quiet_assert_not_null(obj);
+			obj->Node.next = objects;
+			objects = obj;
+		} else {
+			T_quiet_rsc(sc, RTEMS_TOO_MANY);
+			break;
+		}
+	}
+
+	return objects;
+}
+
+void
+T_surrender_objects(void **objects_p, rtems_status_code (*delete)(uint32_t))
+{
+	void *objects;
+
+	objects = *objects_p;
+	*objects_p = NULL;
+
+	while (objects != NULL) {
+		Objects_Control *obj;
+		rtems_status_code sc;
+
+		obj = objects;
+		objects = _Chain_Next(&obj->Node);
+		_Chain_Set_off_chain(&obj->Node);
+
+		sc = (*delete)(obj->id);
+		T_quiet_rsc_success(sc);
+	}
 }

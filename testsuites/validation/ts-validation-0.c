@@ -52,8 +52,6 @@
 #include "config.h"
 #endif
 
-#include <rtems/test-info.h>
-
 #include <rtems/test.h>
 
 /**
@@ -71,6 +69,8 @@
  */
 
 const char rtems_test_name[] = "Validation0";
+
+#define CONFIGURE_MAXIMUM_PROCESSORS 4
 
 #include "ts-default.h"
 

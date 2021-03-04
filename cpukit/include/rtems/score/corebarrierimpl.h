@@ -33,19 +33,34 @@ extern "C" {
  * @{
  */
 
-#define CORE_BARRIER_TQ_OPERATIONS &_Thread_queue_Operations_FIFO
+/**
+ * @brief This maximum thread count constant indicates that the barrier is a
+ *   manual release barrier.
+ */
+#define CORE_BARRIER_MANUAL_RELEASE_MAXIMUM_COUNT 0
 
 /**
- *  @brief Initializes the core barrier.
+ * @brief These thread queue operations are used for core barriers.
  *
- *  This routine initializes the barrier based on the parameters passed.
+ * They are a specialization of ::_Thread_queue_Operations_FIFO.  The only
+ * difference is that the extract operation decrements
+ * CORE_barrier_Control::number_of_waiting_threads.
+ */
+extern const Thread_queue_Operations _CORE_barrier_Thread_queue_operations;
+
+/**
+ * @brief Initializes the core barrier.
  *
- *  @param[out] the_barrier The barrier to initialize.
- *  @param[out] the_barrier_attributes The attributes which define the behavior of this instance.
+ * @param[out] the_barrier is the barrier to initialize.
+ *
+ * @param maximum_count is the number of threads which must arrive at the
+ *   barrier to trip the automatic release or
+ *   ::CORE_BARRIER_MANUAL_RELEASE_MAXIMUM_COUNT to indicate a manual release
+ *   barrier.
  */
 void _CORE_barrier_Initialize(
-  CORE_barrier_Control       *the_barrier,
-  CORE_barrier_Attributes    *the_barrier_attributes
+  CORE_barrier_Control *the_barrier,
+  uint32_t              maximum_count
 );
 
 /**
@@ -113,19 +128,6 @@ Status_Control _CORE_barrier_Seize(
 );
 
 /**
- * @brief Flushes the barrier.
- *
- * @param[in, out] the_barrier The barrier to flush.
- * @param[out] filter The filter for flushing.
- * @param[out] queue_context The thread queue context.
- */
-uint32_t _CORE_barrier_Do_flush(
-  CORE_barrier_Control      *the_barrier,
-  Thread_queue_Flush_filter  filter,
-  Thread_queue_Context      *queue_context
-);
-
-/**
  * @brief Manually releases the barrier.
  *
  * This routine manually releases the barrier.  All of the threads waiting
@@ -141,8 +143,9 @@ RTEMS_INLINE_ROUTINE uint32_t _CORE_barrier_Surrender(
   Thread_queue_Context *queue_context
 )
 {
-  return _CORE_barrier_Do_flush(
-    the_barrier,
+  return _Thread_queue_Flush_critical(
+    &the_barrier->Wait_queue.Queue,
+    &_CORE_barrier_Thread_queue_operations,
     _Thread_queue_Flush_default_filter,
     queue_context
   );
@@ -159,47 +162,12 @@ RTEMS_INLINE_ROUTINE void _CORE_barrier_Flush(
   Thread_queue_Context *queue_context
 )
 {
-  _CORE_barrier_Do_flush(
-    the_barrier,
+  _Thread_queue_Flush_critical(
+    &the_barrier->Wait_queue.Queue,
+    &_CORE_barrier_Thread_queue_operations,
     _Thread_queue_Flush_status_object_was_deleted,
     queue_context
   );
-}
-
-/**
- * @brief Checks if the barrier is automatic.
- *
- * This function returns true if the automatic release attribute is
- * enabled in the @a attribute_set and false otherwise.
- *
- * @param the_attribute The attribute set to test.
- *
- * @retval true The automatic release attribute is enabled.
- * @retval false The automatic release attribute is not enabled.
- */
-RTEMS_INLINE_ROUTINE bool _CORE_barrier_Is_automatic(
-  CORE_barrier_Attributes *the_attribute
-)
-{
-   return
-     (the_attribute->discipline == CORE_BARRIER_AUTOMATIC_RELEASE);
-}
-
-/**
- * @brief Returns the number of currently waiting threads.
- *
- * This routine returns the number of threads currently waiting at the barrier.
- *
- * @param[in] the_barrier The barrier to obtain the number of blocked
- *            threads of.
- *
- * @return the current count of waiting threads of this barrier.
- */
-RTEMS_INLINE_ROUTINE uint32_t  _CORE_barrier_Get_number_of_waiting_threads(
-  CORE_barrier_Control  *the_barrier
-)
-{
-  return the_barrier->number_of_waiting_threads;
 }
 
 /** @} */

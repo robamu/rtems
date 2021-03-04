@@ -34,14 +34,15 @@ extern "C" {
 #define RTEMS_SYSINIT_ISR_STACK                  000200
 #define RTEMS_SYSINIT_PER_CPU_DATA               000220
 #define RTEMS_SYSINIT_SBRK                       000240
+#define RTEMS_SYSINIT_STACK_ALLOCATOR            000250
 #define RTEMS_SYSINIT_WORKSPACE                  000260
 #define RTEMS_SYSINIT_MALLOC                     000280
 #define RTEMS_SYSINIT_BSP_START                  000300
 #define RTEMS_SYSINIT_CPU_COUNTER                000400
+#define RTEMS_SYSINIT_TARGET_HASH                000480
 #define RTEMS_SYSINIT_INITIAL_EXTENSIONS         000500
 #define RTEMS_SYSINIT_MP_EARLY                   000600
 #define RTEMS_SYSINIT_DATA_STRUCTURES            000700
-#define RTEMS_SYSINIT_STACK_ALLOCATOR            000780
 #define RTEMS_SYSINIT_MP                         000800
 #define RTEMS_SYSINIT_USER_EXTENSIONS            000900
 #define RTEMS_SYSINIT_CLASSIC_TASKS              000a00

@@ -130,16 +130,16 @@ static void _Thread_Add_to_zombie_chain( Thread_Control *the_thread )
 
 static void _Thread_Make_zombie( Thread_Control *the_thread )
 {
+  Thread_Information *information;
+
 #if defined(RTEMS_SCORE_THREAD_ENABLE_RESOURCE_COUNT)
   if ( _Thread_Owns_resources( the_thread ) ) {
     _Internal_error( INTERNAL_ERROR_RESOURCE_IN_USE );
   }
 #endif
 
-  _Objects_Close(
-    _Objects_Get_information_id( the_thread->Object.id ),
-    &the_thread->Object
-  );
+  information = _Thread_Get_objects_information( the_thread );
+  _Objects_Close( &information->Objects, &the_thread->Object );
 
   _Thread_Set_state( the_thread, STATES_ZOMBIE );
   _Thread_queue_Extract_with_proxy( the_thread );
@@ -153,52 +153,6 @@ static void _Thread_Make_zombie( Thread_Control *the_thread )
   _Thread_Add_to_zombie_chain( the_thread );
 
   _Thread_Wake_up_joining_threads( the_thread );
-}
-
-static void _Thread_Free( Thread_Control *the_thread )
-{
-  Thread_Information *information = (Thread_Information *)
-    _Objects_Get_information_id( the_thread->Object.id );
-
-  _User_extensions_Thread_delete( the_thread );
-  _User_extensions_Destroy_iterators( the_thread );
-  _ISR_lock_Destroy( &the_thread->Keys.Lock );
-  _Scheduler_Node_destroy(
-    _Thread_Scheduler_get_home( the_thread ),
-    _Thread_Scheduler_get_home_node( the_thread )
-  );
-  _ISR_lock_Destroy( &the_thread->Timer.Lock );
-
-  /*
-   *  The thread might have been FP.  So deal with that.
-   */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-#if ( CPU_USE_DEFERRED_FP_SWITCH == TRUE )
-  if ( _Thread_Is_allocated_fp( the_thread ) )
-    _Thread_Deallocate_fp();
-#endif
-#endif
-
-  _Freechain_Push(
-    &information->Thread_queue_heads.Free,
-    the_thread->Wait.spare_heads
-  );
-
-  /*
-   *  Free the rest of the memory associated with this task
-   *  and set the associated pointers to NULL for safety.
-   */
-  ( *the_thread->Start.stack_free )( the_thread->Start.Initial_stack.area );
-
-#if defined(RTEMS_SMP)
-  _ISR_lock_Destroy( &the_thread->Scheduler.Lock );
-  _ISR_lock_Destroy( &the_thread->Wait.Lock.Default );
-  _SMP_lock_Stats_destroy( &the_thread->Potpourri_stats );
-#endif
-
-  _Thread_queue_Destroy( &the_thread->Join_queue );
-  _Context_Destroy( the_thread, &the_thread->Registers );
-  _Objects_Free( &information->Objects, &the_thread->Object );
 }
 
 static void _Thread_Wait_for_execution_stop( Thread_Control *the_thread )
@@ -227,10 +181,13 @@ void _Thread_Kill_zombies( void )
 
   the_thread = (Thread_Control *) _Chain_Get_unprotected( &zombies->Chain );
   while ( the_thread != NULL ) {
+    Thread_Information *information;
+
     _ISR_lock_Release_and_ISR_enable( &zombies->Lock, &lock_context );
 
     _Thread_Wait_for_execution_stop( the_thread );
-    _Thread_Free( the_thread );
+    information = _Thread_Get_objects_information( the_thread );
+    _Thread_Free( information, the_thread );
 
     _ISR_lock_ISR_disable_and_acquire( &zombies->Lock, &lock_context );
 

@@ -19,7 +19,10 @@
 #define _RTEMS_RTEMS_MODESIMPL_H
 
 #include <rtems/rtems/modes.h>
-#include <rtems/score/isrlevel.h>
+#include <rtems/score/schedulerimpl.h>
+#include <rtems/score/smpimpl.h>
+#include <rtems/score/threadimpl.h>
+#include <rtems/config.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,20 +37,6 @@ extern "C" {
  *
  * @{
  */
-
-/**
- *  @brief Checks if any of the mode flags in mask are set in mode_set.
- *
- *  This function returns TRUE if any of the mode flags in mask
- *  are set in mode_set, and FALSE otherwise.
- */
-RTEMS_INLINE_ROUTINE bool _Modes_Mask_changed (
-  rtems_mode mode_set,
-  rtems_mode masks
-)
-{
-   return ( mode_set & masks ) ? true : false;
-}
 
 /**
  *  @brief Checks if mode_set says that Asynchronous Signal Processing is disabled.
@@ -100,43 +89,70 @@ RTEMS_INLINE_ROUTINE ISR_Level _Modes_Get_interrupt_level (
   return ( mode_set & RTEMS_INTERRUPT_MASK );
 }
 
+#if defined(RTEMS_SMP) || CPU_ENABLE_ROBUST_THREAD_DISPATCH == TRUE
 /**
- *  @brief Sets the current interrupt level to that specified in the mode_set.
+ * @brief Checks if support for the interrupt level is implemented.
  *
- *  This routine sets the current interrupt level to that specified
- *  in the mode_set.
+ * @param mode_set is the mode set which specifies the interrupt level to
+ *   check.
+ *
+ * @return Returns true, if support for the interrupt level is implemented,
+ *   otherwise returns false.
  */
-RTEMS_INLINE_ROUTINE void _Modes_Set_interrupt_level (
+RTEMS_INLINE_ROUTINE bool _Modes_Is_interrupt_level_supported(
   rtems_mode mode_set
 )
 {
-  _ISR_Set_level( _Modes_Get_interrupt_level( mode_set ) );
+  return _Modes_Get_interrupt_level( mode_set ) == 0
+#if CPU_ENABLE_ROBUST_THREAD_DISPATCH == FALSE
+    || !_SMP_Need_inter_processor_interrupts()
+#endif
+    ;
 }
+#endif
 
+#if defined(RTEMS_SMP)
 /**
- *  @brief Changes the modes in old_mode_set indicated by
- *  mask to the requested values in new_mode_set.
+ * @brief Checks if support for the preempt mode is implemented.
  *
- *  This routine changes the modes in old_mode_set indicated by
- *  mask to the requested values in new_mode_set.  The resulting
- *  mode set is returned in out_mode_set and the modes that changed
- *  is returned in changed.
+ * @param mode_set is the mode set which specifies the preempt mode to check.
+ *
+ * @param the_thread is the thread to check.
+ *
+ * @return Returns true, if support for the preempt mode is implemented,
+ *   otherwise returns false.
  */
-RTEMS_INLINE_ROUTINE void _Modes_Change (
-  rtems_mode  old_mode_set,
-  rtems_mode  new_mode_set,
-  rtems_mode  mask,
-  rtems_mode *out_mode_set,
-  rtems_mode *changed
+RTEMS_INLINE_ROUTINE bool _Modes_Is_preempt_mode_supported(
+  rtems_mode            mode_set,
+  const Thread_Control *the_thread
 )
 {
-  rtems_mode _out_mode;
+  return _Modes_Is_preempt( mode_set ) ||
+    _Scheduler_Is_non_preempt_mode_supported(
+      _Thread_Scheduler_get_home( the_thread )
+    );
+}
+#endif
 
-  _out_mode      =  old_mode_set;
-  _out_mode     &= ~mask;
-  _out_mode     |= new_mode_set & mask;
-  *changed       = _out_mode ^ old_mode_set;
-  *out_mode_set  = _out_mode;
+/**
+ * @brief Applies the timeslice mode to the thread.
+ *
+ * @param mode_set is the mode set which specifies the timeslice mode for the
+ *   thread.
+ *
+ * @param[out] the_thread is the thread to apply the timeslice mode.
+ */
+RTEMS_INLINE_ROUTINE void _Modes_Apply_timeslice_to_thread(
+  rtems_mode      mode_set,
+  Thread_Control *the_thread
+)
+{
+  if ( _Modes_Is_timeslice( mode_set ) ) {
+    the_thread->budget_algorithm = THREAD_CPU_BUDGET_ALGORITHM_RESET_TIMESLICE;
+    the_thread->cpu_time_budget = rtems_configuration_get_ticks_per_timeslice();
+  } else {
+    the_thread->budget_algorithm = THREAD_CPU_BUDGET_ALGORITHM_NONE;
+  }
 }
 
 #ifdef __cplusplus

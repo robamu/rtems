@@ -280,6 +280,7 @@ void BSP_rtems_irq_mng_init(unsigned cpuId)
   int known_cpi_isa_bridge = 0;
 #endif
   int i;
+  int r;
 
   /*
    * First initialize the Interrupt management hardware
@@ -310,7 +311,7 @@ void BSP_rtems_irq_mng_init(unsigned cpuId)
 #endif
     known_cpi_isa_bridge = 1;
   }
-  if ( currentBoard == MVME_2300 ) {
+  if ( currentBoard == MVME_2300 || currentBoard == MVME_2600_2700_W_MVME761 ) {
     /* nothing to do for W83C553 bridge */
     known_cpi_isa_bridge = 1;
   }
@@ -351,7 +352,19 @@ void BSP_rtems_irq_mng_init(unsigned cpuId)
     initial_config.irqBase	= BSP_LOWEST_OFFSET;
     initial_config.irqPrioTbl	= irqPrioTable;
 
-    if (!BSP_rtems_irq_mngt_set(&initial_config)) {
+#ifdef BSP_POWERPC_IRQ_GENERIC_SUPPORT
+#ifdef TRACE_IRQ_INIT
+    printk("RTEMS IRQ management: irq-generic\n");
+#endif
+    r = BSP_rtems_irq_generic_set(&initial_config);
+#else
+#ifdef TRACE_IRQ_INIT
+    printk("RTEMS IRQ management: legacy\n");
+#endif
+    r = BSP_rtems_irq_mngt_set(&initial_config);
+#endif
+
+    if (!r) {
       /*
        * put something here that will show the failure...
        */

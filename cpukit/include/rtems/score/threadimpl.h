@@ -164,9 +164,9 @@ typedef struct {
   Thread_CPU_budget_algorithm_callout budget_callout;
 
   /**
-   * @brief Name of the object for the thread.
+   * @brief 32-bit unsigned integer name of the object for the thread.
    */
-  Objects_Name name;
+  uint32_t name;
 
   /**
    * @brief The thread's initial ISR level.
@@ -201,13 +201,29 @@ typedef struct {
  * @param the_thread The thread to initialize.
  * @param config The configuration of the thread to initialize.
  *
- * @retval true The thread initialization was successful.
- * @retval false The thread initialization failed.
+ * @retval STATUS_SUCCESSFUL The thread initialization was successful.
+ *
+ * @retval STATUS_UNSATISFIED The thread initialization failed.
  */
-bool _Thread_Initialize(
+Status_Control _Thread_Initialize(
   Thread_Information         *information,
   Thread_Control             *the_thread,
   const Thread_Configuration *config
+);
+
+/**
+ * @brief Frees the thread.
+ *
+ * This routine invokes the thread delete extensions and frees all resources
+ * associated with the thread.  Afterwards the thread object is closed.
+ *
+ * @param[in, out] information is the thread information.
+ *
+ * @param[in, out] the_thread is the thread to free.
+ */
+void _Thread_Free(
+  Thread_Information *information,
+  Thread_Control     *the_thread
 );
 
 /**
@@ -814,14 +830,18 @@ RTEMS_INLINE_ROUTINE Priority_Control _Thread_Priority_highest(
 }
 
 /**
- * @brief Gets object information for the object id.
+ * @brief Gets the thread object information for the API of the object
+ *   identifier.
  *
- * @param id The id of the object information.
+ * @param id is an object identifier which defines the API to get the
+ *   associated thread objects information.
  *
- * @retval pointer The object information for this id.
- * @retval NULL The object id is not valid.
+ * @retval NULL The object identifier had an invalid API.
+ *
+ * @return Returns the thread object information associated with the API of the
+ *   object identifier.
  */
-RTEMS_INLINE_ROUTINE Objects_Information *_Thread_Get_objects_information(
+RTEMS_INLINE_ROUTINE Objects_Information *_Thread_Get_objects_information_by_id(
   Objects_Id id
 )
 {
@@ -840,6 +860,30 @@ RTEMS_INLINE_ROUTINE Objects_Information *_Thread_Get_objects_information(
    * since this will be done by the object get methods.
    */
   return _Objects_Information_table[ the_api ][ 1 ];
+}
+
+/**
+ * @brief Gets the thread object information of the thread.
+ *
+ * @param the_thread is the thread to get the thread object information.
+ *
+ * @return Returns the thread object information of the thread.
+ */
+RTEMS_INLINE_ROUTINE Thread_Information *_Thread_Get_objects_information(
+  Thread_Control *the_thread
+)
+{
+  size_t              the_api;
+  Thread_Information *information;
+
+  the_api = (size_t) _Objects_Get_API( the_thread->Object.id );
+  _Assert( _Objects_Is_api_valid( the_api ) );
+
+  information = (Thread_Information *)
+    _Objects_Information_table[ the_api ][ 1 ];
+  _Assert( information != NULL );
+
+  return information;
 }
 
 /**
@@ -1208,11 +1252,16 @@ RTEMS_INLINE_ROUTINE void _Thread_Action_initialize(
 }
 
 /**
- * @brief Adds a post switch action to the thread with the given handler.
+ * @brief Adds the post switch action to the thread.
  *
- * @param[in, out] the_thread The thread.
- * @param[in,  out] action The action to add.
- * @param handler The handler for the action.
+ * The caller shall own the thread state lock.  A thread dispatch is
+ * requested.
+ *
+ * @param[in, out] the_thread is the thread of the action.
+ *
+ * @param[in, out] action is the action to add.
+ *
+ * @param handler is the handler for the action.
  */
 RTEMS_INLINE_ROUTINE void _Thread_Add_post_switch_action(
   Thread_Control        *the_thread,
@@ -1231,6 +1280,31 @@ RTEMS_INLINE_ROUTINE void _Thread_Add_post_switch_action(
   _Thread_Dispatch_request( _Per_CPU_Get(), cpu_of_thread );
 
   _Chain_Append_if_is_off_chain_unprotected(
+    &the_thread->Post_switch_actions.Chain,
+    &action->Node
+  );
+}
+
+/**
+ * @brief Appends the post switch action to the thread.
+ *
+ * The caller shall own the thread state lock.  The action shall be inactive.
+ * The handler of the action shall be already set.  A thread dispatch is not
+ * requested.
+ *
+ * @param[in, out] the_thread is the thread of the action.
+ *
+ * @param[in, out] action is the action to add.
+ */
+RTEMS_INLINE_ROUTINE void _Thread_Append_post_switch_action(
+  Thread_Control *the_thread,
+  Thread_Action  *action
+)
+{
+  _Assert( _Thread_State_is_owner( the_thread ) );
+  _Assert( action->handler != NULL );
+
+  _Chain_Append_unprotected(
     &the_thread->Post_switch_actions.Chain,
     &action->Node
   );

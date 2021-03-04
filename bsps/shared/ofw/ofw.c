@@ -162,7 +162,7 @@ ssize_t rtems_ofw_get_prop_len(
     return len + 1;
   }
 
-  if (prop == NULL && strcmp(propname, "/chosen") == 0) {
+  if (prop == NULL && offset == fdt_path_offset(fdtp, "/chosen")) {
     if (strcmp(propname, "fdtbootcpu") == 0)
       return sizeof(pcell_t);
     if (strcmp(propname, "fdtmemreserv") == 0)
@@ -198,11 +198,19 @@ ssize_t rtems_ofw_get_prop(
 
   if (prop == NULL && strcmp(propname, "name") == 0) {
     prop = fdt_get_name(fdtp, offset, &len);
-    strncpy(buf, prop, bufsize);
+
+    /* Node name's are 1-31 chars in length consisting of only
+     * ascii chars and are null terminated */
+    strlcpy(buf, prop, bufsize);
+
+    /* Return the length of the name including the null byte
+     * rather than the amount copied.
+     * This is the behaviour in libBSD ofw_fdt_getprop
+     */
     return len + 1;
   }
 
-  if (prop == NULL && strcmp(propname, "/chosen") == 0) {
+  if (prop == NULL && offset == fdt_path_offset(fdtp, "/chosen")) {
     if (strcmp(propname, "fdtbootcpu") == 0) {
       cpuid = cpu_to_fdt32(fdt_boot_cpuid_phys(fdtp));
       len = sizeof(cpuid);
@@ -232,7 +240,7 @@ ssize_t rtems_ofw_get_enc_prop(
 {
   ssize_t rv;
 
-  assert(len % 4 == 0);
+  assert(len % sizeof(pcell_t) == 0);
   rv = rtems_ofw_get_prop(node, prop, buf, len);
 
   if (rv < 0) {
@@ -313,7 +321,7 @@ ssize_t rtems_ofw_get_prop_alloc(
     }
 
     if (rtems_ofw_get_prop(node, propname, *buf, len) == -1) {
-      rtems_ofw_free(buf);
+      rtems_ofw_free(*buf);
       *buf = NULL;
       return -1;
     }
@@ -344,7 +352,7 @@ ssize_t rtems_ofw_get_prop_alloc_multi(
     }
 
     if (rtems_ofw_get_prop(node, propname, *buf, len) == -1) {
-      rtems_ofw_free(buf);
+      rtems_ofw_free(*buf);
       *buf = NULL;
       return -1;
     }
@@ -373,7 +381,7 @@ ssize_t rtems_ofw_get_enc_prop_alloc(
     }
 
     if (rtems_ofw_get_enc_prop(node, propname, *buf, len) == -1) {
-      rtems_ofw_free(buf);
+      rtems_ofw_free(*buf);
       *buf = NULL;
       return -1;
     }
@@ -404,7 +412,7 @@ ssize_t rtems_ofw_get_enc_prop_alloc_multi(
     }
 
     if (rtems_ofw_get_enc_prop(node, propname, *buf, len) == -1) {
-      rtems_ofw_free(buf);
+      rtems_ofw_free(*buf);
       *buf = NULL;
       return -1;
     }
@@ -501,11 +509,12 @@ static phandle_t rtems_ofw_get_effective_phandle(
 {
   phandle_t child;
   phandle_t ref;
+  int node_offset;
 
-  for (child = rtems_ofw_child(node); child != 0; child = rtems_ofw_peer(child)) {
-    ref = rtems_ofw_get_effective_phandle(child, xref);
-    if (ref != -1)
-      return ref;
+  node_offset = fdt_path_offset(fdtp, "/");
+
+  while ((node_offset = fdt_next_node(fdtp, node_offset, NULL)) > 0) {
+    child = rtems_fdt_offset_to_phandle(node_offset);
 
     if (rtems_ofw_get_enc_prop(child, "phandle", &ref, sizeof(ref)) == -1 &&
         rtems_ofw_get_enc_prop(child, "ibm,phandle", &ref, sizeof(ref)) == -1 &&
@@ -614,7 +623,7 @@ int rtems_ofw_get_reg(
     offset = rtems_fdt_phandle_to_offset(parent);
     ptr = fdt_getprop(fdtp, offset, "ranges", &len);
 
-    if (len < 0) {
+    if (ptr == NULL) {
       break;
     }
 

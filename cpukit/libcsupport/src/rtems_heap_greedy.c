@@ -25,12 +25,17 @@
 
 #include "malloc_p.h"
 
+#define SBRK_ALLOC_SIZE (128 * 1024UL * 1024UL)
+
 void *rtems_heap_greedy_allocate(
   const uintptr_t *block_sizes,
   size_t block_count
 )
 {
+  Heap_Control *heap = RTEMS_Malloc_Heap;
   void *opaque;
+
+  rtems_heap_sbrk_greedy_allocate( heap, SBRK_ALLOC_SIZE );
 
   _RTEMS_Lock_allocator();
   opaque = _Heap_Greedy_allocate( RTEMS_Malloc_Heap, block_sizes, block_count );
@@ -43,11 +48,14 @@ void *rtems_heap_greedy_allocate_all_except_largest(
   uintptr_t *allocatable_size
 )
 {
+  Heap_Control *heap = RTEMS_Malloc_Heap;
   void *opaque;
+
+  rtems_heap_sbrk_greedy_allocate( heap, SBRK_ALLOC_SIZE );
 
   _RTEMS_Lock_allocator();
   opaque = _Heap_Greedy_allocate_all_except_largest(
-    RTEMS_Malloc_Heap,
+    heap,
     allocatable_size
   );
   _RTEMS_Unlock_allocator();

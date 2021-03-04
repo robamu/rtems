@@ -10,7 +10,7 @@
  */
 
 /*
- * Copyright (c) 2015, 2016 embedded brains GmbH.  All rights reserved.
+ * Copyright (c) 2015, 2021 embedded brains GmbH.  All rights reserved.
  *
  *  embedded brains GmbH
  *  Dornierstr. 4
@@ -27,6 +27,7 @@
 #include "config.h"
 #endif
 
+#include <rtems/score/threadqops.h>
 #include <rtems/score/threadimpl.h>
 #include <rtems/score/assert.h>
 #include <rtems/score/chainimpl.h>
@@ -49,7 +50,7 @@
     Queue \
   )
 
-static void _Thread_queue_Do_nothing_priority_actions(
+void _Thread_queue_Do_nothing_priority_actions(
   Thread_queue_Queue *queue,
   Priority_Actions   *priority_actions
 )
@@ -198,7 +199,7 @@ static void _Thread_queue_FIFO_do_extract(
   _Chain_Extract_unprotected( &scheduler_node->Wait.Priority.Node.Node.Chain );
 }
 
-static void _Thread_queue_FIFO_enqueue(
+void _Thread_queue_FIFO_enqueue(
   Thread_queue_Queue   *queue,
   Thread_Control       *the_thread,
   Thread_queue_Context *queue_context
@@ -213,7 +214,7 @@ static void _Thread_queue_FIFO_enqueue(
   );
 }
 
-static void _Thread_queue_FIFO_extract(
+void _Thread_queue_FIFO_extract(
   Thread_queue_Queue   *queue,
   Thread_Control       *the_thread,
   Thread_queue_Context *queue_context
@@ -229,23 +230,21 @@ static void _Thread_queue_FIFO_extract(
   );
 }
 
-static Thread_Control *_Thread_queue_FIFO_first(
-  Thread_queue_Heads *heads
-)
+Thread_Control *_Thread_queue_FIFO_first( const Thread_queue_Heads *heads )
 {
-  Chain_Control  *fifo;
-  Chain_Node     *first;
-  Scheduler_Node *scheduler_node;
+  const Chain_Control  *fifo;
+  const Chain_Node     *first;
+  const Scheduler_Node *scheduler_node;
 
   fifo = &heads->Heads.Fifo;
   _Assert( !_Chain_Is_empty( fifo ) );
-  first = _Chain_First( fifo );
+  first = _Chain_Immutable_first( fifo );
   scheduler_node = SCHEDULER_NODE_OF_WAIT_PRIORITY_NODE( first );
 
   return _Scheduler_Node_get_owner( scheduler_node );
 }
 
-static Thread_Control *_Thread_queue_FIFO_surrender(
+Thread_Control *_Thread_queue_FIFO_surrender(
   Thread_queue_Queue   *queue,
   Thread_queue_Heads   *heads,
   Thread_Control       *previous_owner,
@@ -253,6 +252,8 @@ static Thread_Control *_Thread_queue_FIFO_surrender(
 )
 {
   Thread_Control *first;
+
+  (void) previous_owner;
 
   first = _Thread_queue_FIFO_first( heads );
   _Thread_queue_Queue_extract(
@@ -600,12 +601,12 @@ static void _Thread_queue_Priority_extract(
 }
 
 static Thread_Control *_Thread_queue_Priority_first(
-  Thread_queue_Heads *heads
+  const Thread_queue_Heads *heads
 )
 {
-  Thread_queue_Priority_queue *priority_queue;
-  Priority_Node               *first;
-  Scheduler_Node              *scheduler_node;
+  const Thread_queue_Priority_queue *priority_queue;
+  Priority_Node                     *first;
+  Scheduler_Node                    *scheduler_node;
 
 #if defined(RTEMS_SMP)
   _Assert( !_Chain_Is_empty( &heads->Heads.Fifo ) );

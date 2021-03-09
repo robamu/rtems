@@ -11,7 +11,6 @@ actions:
     # tests that are passing intermittently
     spcpucounter01: indeterminate
     rtmonuse: indeterminate
-    sp37: indeterminate
     sp68: indeterminate
     sp04: indeterminate
     sp20: indeterminate
@@ -38,13 +37,5 @@ default: null
 default-by-variant: []
 description: ''
 enabled-by: true
-links:
-- role: build-dependency
-  uid: ../../tstnoiconv
-- role: build-dependency
-  uid: ../../tstnojffs2
-- role: build-dependency
-  uid: ../../tstnolibdl
-- role: build-dependency
-  uid: ../../tstnorfs
+links: []
 type: build

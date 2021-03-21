@@ -23,6 +23,7 @@
 
 #include <rtems/asm.h>
 #include <rtems/score/percpu.h>
+#include <libcpu/grlib-tn-0018.h>
 
 #if defined(SPARC_USE_SYNCHRONOUS_FP_SWITCH)
   #define FP_FRAME_OFFSET_FO_F1 (SPARC_MINIMUM_STACK_FRAME_SIZE + 0)
@@ -523,8 +524,9 @@ dont_do_the_window:
          * context.
          */
         andcc    %l0, %l5, %g0
-        bne,a    dont_switch_stacks
-         st      %fsr, [%g6 + SPARC_PER_CPU_FSR_OFFSET]
+        beq      dont_switch_stacks
+         nop
+        st      %fsr, [%g6 + SPARC_PER_CPU_FSR_OFFSET]
 #endif
 
 dont_switch_stacks:
@@ -683,11 +685,13 @@ isr_dispatch:
         cmp     %l6, %l7
         bne,a   .Ldisable_fp
          andn   %l0, %l5, %l0
+        st      %g0, [%g6 + SPARC_PER_CPU_FP_OWNER_OFFSET]
         ba      .Lthread_dispatch_done
-         st     %g0, [%g6 + SPARC_PER_CPU_FP_OWNER_OFFSET]
+         nop
 .Ldisable_fp:
+        st       %l0, [%fp + ISF_PSR_OFFSET]
         ba      .Lthread_dispatch_done
-         st      %l0, [%fp + ISF_PSR_OFFSET]
+         nop
 .Lnon_fp_thread_dispatch:
 #elif defined(SPARC_USE_SYNCHRONOUS_FP_SWITCH)
         /* Test if we interrupted a floating point thread (PSR[EF] == 1) */
@@ -892,11 +896,13 @@ simple_return:
         save                               ! Back to ISR dispatch window
 
 good_task_window:
+        TN0018_WAIT_IFLUSH %l3,%l4         ! GRLIB-TN-0018 work around macro
 
         mov     %l0, %psr                  !  **** DISABLE TRAPS ****
         nop; nop; nop
                                            !  and restore condition codes.
         ld      [%g1 + ISF_G1_OFFSET], %g1 ! restore g1
+        TN0018_FIX %l3,%l4                 ! GRLIB-TN-0018 work around macro
         jmp     %l1                        ! transfer control and
         rett    %l2                        ! go back to tasks window
 

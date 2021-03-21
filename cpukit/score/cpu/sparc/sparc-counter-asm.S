@@ -31,8 +31,9 @@ SYM(_SPARC_Counter_read_default):
 	sethi	%hi(_SPARC_Counter + 12), %o1
 	ld	[%o1 + %lo(_SPARC_Counter + 12)], %o0
 	add	%o0, 1, %o0
+	st	%o0, [%o1 + %lo(_SPARC_Counter + 12)]
 	jmp	%o7 + 8
-	 st	%o0, [%o1 + %lo(_SPARC_Counter + 12)]
+	 nop
 
 	PUBLIC(_SPARC_Counter_read_up)
 	PUBLIC(_SPARC_Get_timecount_up)
@@ -115,6 +116,10 @@ SYM(_SPARC_Get_timecount_clock):
 	bne	.Lpending
 	 ld	[%o5 + 20], %o4
 	ta	SPARC_SWTRAP_IRQEN
+#ifdef __FIX_LEON3FT_TN0018
+	/* A nop is added to work around the GRLIB-TN-0018 errata */
+	nop
+#endif
 	jmp	%o7 + 8
 	 sub	%o4, %o0, %o0
 .Lpending:

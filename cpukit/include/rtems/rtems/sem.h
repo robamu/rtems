@@ -240,9 +240,6 @@ extern "C" {
  * * When the directive operates on a global object, the directive sends a
  *   message to remote nodes.  This may preempt the calling task.
  *
- * * When a semaphore using the MrsP locking protocol is created, the initial
- *   count shall be exactly one.
- *
  * * The number of semaphores available to the application is configured
  *   through the #CONFIGURE_MAXIMUM_SEMAPHORES application configuration
  *   option.
@@ -803,7 +800,8 @@ rtems_status_code rtems_semaphore_flush( rtems_id id );
  *   sc = rtems_semaphore_create(
  *     rtems_build_name( 'M', 'R', 'S', 'P' ),
  *     1,
- *     RTEMS_BINARY_SEMAPHORE | RTEMS_MULTIPROCESSOR_RESOURCE_SHARING,
+ *     RTEMS_BINARY_SEMAPHORE | RTEMS_PRIORITY |
+ *       RTEMS_MULTIPROCESSOR_RESOURCE_SHARING,
  *     1,
  *     &semaphore_id
  *   );

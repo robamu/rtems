@@ -1,7 +1,7 @@
 /*
  *  GRCAN driver
  *
- *  COPYRIGHT (c) 2007.
+ *  COPYRIGHT (c) 2007-2019.
  *  Cobham Gaisler AB.
  *
  *  The license and distribution terms for this file may be
@@ -18,18 +18,17 @@
 #include <rtems/bspIo.h>
 
 #include <grlib/grcan.h>
+#include <grlib/canbtrs.h>
 #include <drvmgr/drvmgr.h>
 #include <grlib/ambapp_bus.h>
 #include <grlib/ambapp.h>
 
 #include <grlib/grlib_impl.h>
+#include "grcan_internal.h"
 
 /* Maximum number of GRCAN devices supported by driver */
 #define GRCAN_COUNT_MAX 8
 
-#define WRAP_AROUND_TX_MSGS 1
-#define WRAP_AROUND_RX_MSGS 2
-#define GRCAN_MSG_SIZE sizeof(struct grcan_msg)
 #define BLOCK_SIZE (16*4)
 
 /* grcan needs to have it buffers aligned to 1k boundaries */
@@ -57,15 +56,6 @@
  #define IRQ_MASK(irqno)
 #endif
 
-#ifndef GRCAN_DEFAULT_BAUD
- /* default to 500kbits/s */
- #define GRCAN_DEFAULT_BAUD 500000
-#endif
-
-#ifndef GRCAN_SAMPLING_POINT
- #define GRCAN_SAMPLING_POINT 80
-#endif
-
 /* Uncomment for debug output */
 /****************** DEBUG Definitions ********************/
 #define DBG_TX 2
@@ -88,70 +78,10 @@ int state2err[4] = {
 	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
 };
 
-struct grcan_msg {
-	unsigned int head[2];
-	unsigned char data[8];
-};
-
-struct grcan_config {
-	struct grcan_timing timing;
-	struct grcan_selection selection;
-	int abort;
-	int silent;
-};
-
-struct grcan_priv {
-	struct drvmgr_dev *dev;	/* Driver manager device */
-	char devName[32];	/* Device Name */
-	unsigned int baseaddr, ram_base;
-	struct grcan_regs *regs;
-	int irq;
-	int minor;
-	int open;
-	int started;
-	unsigned int channel;
-	int flushing;
-	unsigned int corefreq_hz;
-
-	/* Circular DMA buffers */
-	void *_rx, *_rx_hw;
-	void *_tx, *_tx_hw;
-	void *txbuf_adr;
-	void *rxbuf_adr;
-	struct grcan_msg *rx;
-	struct grcan_msg *tx;
-	unsigned int rxbuf_size;    /* requested RX buf size in bytes */
-	unsigned int txbuf_size;    /* requested TX buf size in bytes */
-
-	int txblock, rxblock;
-	int txcomplete, rxcomplete;
-
-	struct grcan_filter sfilter;
-	struct grcan_filter afilter;
-	int config_changed; /* 0=no changes, 1=changes ==> a Core reset is needed */
-	struct grcan_config config;
-	struct grcan_stats stats;
-
-	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
-	SPIN_DECLARE(devlock);
-};
-
 static void __inline__ grcan_hw_reset(struct grcan_regs *regs);
 
-static int grcan_hw_read_try(
-	struct grcan_priv *pDev,
-	struct grcan_regs *regs,
-	CANMsg *buffer,
-	int max);
-
-static int grcan_hw_write_try(
-	struct grcan_priv *pDev,
-	struct grcan_regs *regs,
-	CANMsg *buffer,
-	int count);
-
 static void grcan_hw_config(
-	struct grcan_regs *regs,
+	struct grcan_priv *pDev,
 	struct grcan_config *conf);
 
 static void grcan_hw_accept(
@@ -164,21 +94,40 @@ static void grcan_hw_sync(
 
 static void grcan_interrupt(void *arg);
 
-#ifdef GRCAN_REG_BYPASS_CACHE
-#define READ_REG(address) grlib_read_uncached32((unsigned int)(address))
-#else
-#define READ_REG(address) (*(volatile unsigned int *)(address))
-#endif
-
-#ifdef GRCAN_DMA_BYPASS_CACHE
-#define READ_DMA_WORD(address) grlib_read_uncached32((unsigned int)(address))
-#define READ_DMA_BYTE(address) grlib_read_uncached8((unsigned int)(address))
-#else
-#define READ_DMA_WORD(address) (*(volatile unsigned int *)(address))
-#define READ_DMA_BYTE(address) (*(volatile unsigned char *)(address))
-#endif
-
 #define NELEM(a) ((int) (sizeof (a) / sizeof (a[0])))
+
+/* GRCAN nominal boundaries for baud-rate paramters */
+struct grlib_canbtrs_ranges grcan_btrs_ranges = {
+	.max_scaler = 256*8, /* scaler is multiplied by BPR in steps 1,2,4,8 */
+	.has_bpr = 1,
+	.divfactor = 2,
+	.min_tseg1 = 1,
+	.max_tseg1 = 15,
+	.min_tseg2 = 2,
+	.max_tseg2 = 8,
+};
+
+/* GRCANFD nominal boundaries */
+struct grlib_canbtrs_ranges grcanfd_nom_btrs_ranges = {
+	.max_scaler = 256,
+	.has_bpr = 0,
+	.divfactor = 1,
+	.min_tseg1 = 2,
+	.max_tseg1 = 63,
+	.min_tseg2 = 2,
+	.max_tseg2 = 16,
+};
+
+/* GRCANFD flexible baud-rate boundaries */
+struct grlib_canbtrs_ranges grcanfd_fd_btrs_ranges = {
+	.max_scaler = 256,
+	.has_bpr = 0,
+	.divfactor = 1,
+	.min_tseg1 = 1,
+	.max_tseg1 = 15,
+	.min_tseg2 = 2,
+	.max_tseg2 = 8,
+};
 
 static int grcan_count = 0;
 static struct grcan_priv *priv_tab[GRCAN_COUNT_MAX];
@@ -202,6 +151,7 @@ struct amba_dev_id grcan_ids[] =
 {
 	{VENDOR_GAISLER, GAISLER_GRCAN},
 	{VENDOR_GAISLER, GAISLER_GRHCAN},
+	{VENDOR_GAISLER, GAISLER_GRCANFD},
 	{0, 0}		/* Mark end of table */
 };
 
@@ -294,6 +244,8 @@ int grcan_device_init(struct grcan_priv *pDev)
 	pDev->irq = pnpinfo->irq;
 	pDev->regs = (struct grcan_regs *)pnpinfo->apb_slv->start;
 	pDev->minor = pDev->dev->minor_drv;
+	if (ambadev->id.device == GAISLER_GRCANFD)
+		pDev->fd_capable = 1;
 
 	/* Get frequency in Hz */
 	if ( drvmgr_freq_get(pDev->dev, DEV_APB_SLV, &pDev->corefreq_hz) ) {
@@ -373,7 +325,7 @@ static rtems_device_driver grcan_hw_start(struct grcan_priv *pDev)
 	 * and Setup timing
 	 */
 	if (pDev->config_changed) {
-		grcan_hw_config(pDev->regs, &pDev->config);
+		grcan_hw_config(pDev, &pDev->config);
 		pDev->config_changed = 0;
 	}
 
@@ -456,9 +408,10 @@ static void grcan_sw_stop(struct grcan_priv *pDev)
 	rtems_semaphore_release(pDev->txempty_sem);
 }
 
-static void grcan_hw_config(struct grcan_regs *regs, struct grcan_config *conf)
+static void grcan_hw_config(struct grcan_priv *pDev, struct grcan_config *conf)
 {
 	unsigned int config = 0;
+	struct grcan_regs *regs = pDev->regs;
 
 	/* Reset HurriCANe Core */
 	regs->ctrl = 0;
@@ -479,13 +432,29 @@ static void grcan_hw_config(struct grcan_regs *regs, struct grcan_config *conf)
 		config |= GRCAN_CFG_ENABLE1;
 
 	/* Timing */
-	config |= (conf->timing.bpr << GRCAN_CFG_BPR_BIT) & GRCAN_CFG_BPR;
-	config |= (conf->timing.rsj << GRCAN_CFG_RSJ_BIT) & GRCAN_CFG_RSJ;
-	config |= (conf->timing.ps1 << GRCAN_CFG_PS1_BIT) & GRCAN_CFG_PS1;
-	config |= (conf->timing.ps2 << GRCAN_CFG_PS2_BIT) & GRCAN_CFG_PS2;
-	config |=
-	    (conf->timing.scaler << GRCAN_CFG_SCALER_BIT) & GRCAN_CFG_SCALER;
-
+	if (!pDev->fd_capable) {
+		config |= (conf->timing.bpr << GRCAN_CFG_BPR_BIT) &
+			  GRCAN_CFG_BPR;
+		config |= (conf->timing.rsj << GRCAN_CFG_RSJ_BIT) &
+			  GRCAN_CFG_RSJ;
+		config |= (conf->timing.ps1 << GRCAN_CFG_PS1_BIT) &
+			  GRCAN_CFG_PS1;
+		config |= (conf->timing.ps2 << GRCAN_CFG_PS2_BIT) &
+			  GRCAN_CFG_PS2;
+		config |= (conf->timing.scaler << GRCAN_CFG_SCALER_BIT) &
+		          GRCAN_CFG_SCALER;
+	} else {
+		regs->nbtr =
+			(conf->timing.scaler << GRCANFD_NBTR_SCALER_BIT) |
+			(conf->timing.ps1 << GRCANFD_NBTR_PS1_BIT) |
+			(conf->timing.ps2 << GRCANFD_NBTR_PS2_BIT) |
+			(conf->timing.rsj << GRCANFD_NBTR_SJW_BIT);
+		regs->fdbtr =
+			(conf->timing_fd.scaler << GRCANFD_FDBTR_SCALER_BIT) |
+			(conf->timing_fd.ps1 << GRCANFD_FDBTR_PS1_BIT) |
+			(conf->timing_fd.ps2 << GRCANFD_FDBTR_PS2_BIT) |
+			(conf->timing_fd.sjw << GRCANFD_FDBTR_SJW_BIT);
+	}
 	/* Write configuration */
 	regs->conf = config;
 
@@ -520,338 +489,7 @@ static void grcan_hw_sync(struct grcan_regs *regs, struct grcan_filter *sfilter)
 	regs->smask = sfilter->mask;
 }
 
-static unsigned int grcan_hw_rxavail(
-	unsigned int rp,
-	unsigned int wp, unsigned int size
-)
-{
-	if (rp == wp) {
-		/* read pointer and write pointer is equal only
-		 * when RX buffer is empty.
-		 */
-		return 0;
-	}
-
-	if (wp > rp) {
-		return (wp - rp) / GRCAN_MSG_SIZE;
-	} else {
-		return (size - (rp - wp)) / GRCAN_MSG_SIZE;
-	}
-}
-
-static unsigned int grcan_hw_txspace(
-	unsigned int rp,
-	unsigned int wp,
-	unsigned int size
-)
-{
-	unsigned int left;
-
-	if (rp == wp) {
-		/* read pointer and write pointer is equal only
-		 * when TX buffer is empty.
-		 */
-		return size / GRCAN_MSG_SIZE - WRAP_AROUND_TX_MSGS;
-	}
-
-	/* size - 4 - abs(read-write) */
-	if (wp > rp) {
-		left = size - (wp - rp);
-	} else {
-		left = rp - wp;
-	}
-
-	return left / GRCAN_MSG_SIZE - WRAP_AROUND_TX_MSGS;
-}
-
-#define MIN_TSEG1 1
-#define MIN_TSEG2 2
-#define MAX_TSEG1 14
-#define MAX_TSEG2 8
-
-static int grcan_calc_timing(
-	unsigned int baud,	/* The requested BAUD to calculate timing for */
-	unsigned int core_hz,	/* Frequency in Hz of GRCAN Core */
-	unsigned int sampl_pt,
-	struct grcan_timing *timing	/* result is placed here */
-)
-{
-	int best_error = 1000000000;
-	int error;
-	int best_tseg = 0, best_brp = 0, brp = 0;
-	int tseg = 0, tseg1 = 0, tseg2 = 0;
-	int sjw = 1;
-
-	/* Default to 90% */
-	if ((sampl_pt < 50) || (sampl_pt > 99)) {
-		sampl_pt = GRCAN_SAMPLING_POINT;
-	}
-
-	if ((baud < 5000) || (baud > 1000000)) {
-		/* invalid speed mode */
-		return -1;
-	}
-
-	/* find best match, return -2 if no good reg
-	 * combination is available for this frequency
-	 */
-
-	/* some heuristic specials */
-	if (baud > ((1000000 + 500000) / 2))
-		sampl_pt = 75;
-
-	if (baud < ((12500 + 10000) / 2))
-		sampl_pt = 75;
-
-	/* tseg even = round down, odd = round up */
-	for (
-		tseg = (MIN_TSEG1 + MIN_TSEG2 + 2) * 2;
-		tseg <= (MAX_TSEG2 + MAX_TSEG1 + 2) * 2 + 1;
-		tseg++
-	) {
-		brp = core_hz / ((1 + tseg / 2) * baud) + tseg % 2;
-		if (
-			(brp <= 0) ||
-			((brp > 256 * 1) && (brp <= 256 * 2) && (brp & 0x1)) ||
-			((brp > 256 * 2) && (brp <= 256 * 4) && (brp & 0x3)) ||
-			((brp > 256 * 4) && (brp <= 256 * 8) && (brp & 0x7)) ||
-			(brp > 256 * 8)
-		)
-			continue;
-
-		error = baud - core_hz / (brp * (1 + tseg / 2));
-		if (error < 0) {
-			error = -error;
-		}
-
-		if (error <= best_error) {
-			best_error = error;
-			best_tseg = tseg / 2;
-			best_brp = brp - 1;
-		}
-	}
-
-	if (best_error && (baud / best_error < 10)) {
-		return -2;
-	} else if (!timing)
-		return 0;	/* nothing to store result in, but a valid bitrate can be calculated */
-
-	tseg2 = best_tseg - (sampl_pt * (best_tseg + 1)) / 100;
-
-	if (tseg2 < MIN_TSEG2) {
-		tseg2 = MIN_TSEG2;
-	}
-
-	if (tseg2 > MAX_TSEG2) {
-		tseg2 = MAX_TSEG2;
-	}
-
-	tseg1 = best_tseg - tseg2 - 2;
-
-	if (tseg1 > MAX_TSEG1) {
-		tseg1 = MAX_TSEG1;
-		tseg2 = best_tseg - tseg1 - 2;
-	}
-
-	/* Get scaler and BRP from pseudo BRP */
-	if (best_brp <= 256) {
-		timing->scaler = best_brp;
-		timing->bpr = 0;
-	} else if (best_brp <= 256 * 2) {
-		timing->scaler = ((best_brp + 1) >> 1) - 1;
-		timing->bpr = 1;
-	} else if (best_brp <= 256 * 4) {
-		timing->scaler = ((best_brp + 1) >> 2) - 1;
-		timing->bpr = 2;
-	} else {
-		timing->scaler = ((best_brp + 1) >> 3) - 1;
-		timing->bpr = 3;
-	}
-
-	timing->ps1 = tseg1 + 1;
-	timing->ps2 = tseg2;
-	timing->rsj = sjw;
-
-	return 0;
-}
-
-static int grcan_hw_read_try(
-	struct grcan_priv *pDev,
-	struct grcan_regs *regs,
-	CANMsg * buffer,
-	int max
-)
-{
-	int i, j;
-	CANMsg *dest;
-	struct grcan_msg *source, tmp;
-	unsigned int wp, rp, size, rxmax, addr;
-	int trunk_msg_cnt;
-
-	FUNCDBG();
-
-	wp = READ_REG(&regs->rx0wr);
-	rp = READ_REG(&regs->rx0rd);
-
-	/*
-	 * Due to hardware wrap around simplification write pointer will
-	 * never reach the read pointer, at least a gap of 8 bytes.
-	 * The only time they are equal is when the read pointer has
-	 * reached the write pointer (empty buffer)
-	 *
-	 */
-	if (wp != rp) {
-		/* Not empty, we have received chars...
-		 * Read as much as possible from DMA buffer
-		 */
-		size = READ_REG(&regs->rx0size);
-
-		/* Get number of bytes available in RX buffer */
-		trunk_msg_cnt = grcan_hw_rxavail(rp, wp, size);
-
-		/* truncate size if user space buffer hasn't room for
-		 * all received chars.
-		 */
-		if (trunk_msg_cnt > max)
-			trunk_msg_cnt = max;
-
-		/* Read until i is 0 */
-		i = trunk_msg_cnt;
-
-		addr = (unsigned int)pDev->rx;
-		source = (struct grcan_msg *)(addr + rp);
-		dest = buffer;
-		rxmax = addr + (size - GRCAN_MSG_SIZE);
-
-		/* Read as many can messages as possible */
-		while (i > 0) {
-			/* Read CAN message from DMA buffer */
-			tmp.head[0] = READ_DMA_WORD(&source->head[0]);
-			tmp.head[1] = READ_DMA_WORD(&source->head[1]);
-			if (tmp.head[1] & 0x4) {
-				DBGC(DBG_RX, "overrun\n");
-			}
-			if (tmp.head[1] & 0x2) {
-				DBGC(DBG_RX, "bus-off mode\n");
-			}
-			if (tmp.head[1] & 0x1) {
-				DBGC(DBG_RX, "error-passive mode\n");
-			}
-			/* Convert one grcan CAN message to one "software" CAN message */
-			dest->extended = tmp.head[0] >> 31;
-			dest->rtr = (tmp.head[0] >> 30) & 0x1;
-			if (dest->extended) {
-				dest->id = tmp.head[0] & 0x3fffffff;
-			} else {
-				dest->id = (tmp.head[0] >> 18) & 0xfff;
-			}
-			dest->len = tmp.head[1] >> 28;
-			for (j = 0; j < dest->len; j++)
-				dest->data[j] = READ_DMA_BYTE(&source->data[j]);
-
-			/* wrap around if neccessary */
-			source =
-			    ((unsigned int)source >= rxmax) ?
-			    (struct grcan_msg *)addr : source + 1;
-			dest++;	/* straight user buffer */
-			i--;
-		}
-		{
-			/* A bus off interrupt may have occured after checking pDev->started */
-			SPIN_IRQFLAGS(oldLevel);
-
-			SPIN_LOCK_IRQ(&pDev->devlock, oldLevel);
-			if (pDev->started == STATE_STARTED) {
-				regs->rx0rd = (unsigned int) source - addr;
-				regs->rx0ctrl = GRCAN_RXCTRL_ENABLE;
-			} else {
-				DBGC(DBG_STATE, "cancelled due to a BUS OFF error\n");
-				trunk_msg_cnt = state2err[pDev->started];
-			}
-			SPIN_UNLOCK_IRQ(&pDev->devlock, oldLevel);
-		}
-		return trunk_msg_cnt;
-	}
-	return 0;
-}
-
-static int grcan_hw_write_try(
-	struct grcan_priv *pDev,
-	struct grcan_regs *regs,
-	CANMsg * buffer,
-	int count
-)
-{
-	unsigned int rp, wp, size, txmax, addr;
-	int ret;
-	struct grcan_msg *dest;
-	CANMsg *source;
-	int space_left;
-	unsigned int tmp;
-	int i;
-
-	DBGC(DBG_TX, "\n");
-	/*FUNCDBG(); */
-
-	rp = READ_REG(&regs->tx0rd);
-	wp = READ_REG(&regs->tx0wr);
-	size = READ_REG(&regs->tx0size);
-
-	space_left = grcan_hw_txspace(rp, wp, size);
-
-	/* is circular fifo full? */
-	if (space_left < 1)
-		return 0;
-
-	/* Truncate size */
-	if (space_left > count)
-		space_left = count;
-	ret = space_left;
-
-	addr = (unsigned int)pDev->tx;
-
-	dest = (struct grcan_msg *)(addr + wp);
-	source = (CANMsg *) buffer;
-	txmax = addr + (size - GRCAN_MSG_SIZE);
-
-	while (space_left > 0) {
-		/* Convert and write CAN message to DMA buffer */
-		if (source->extended) {
-			tmp = (1 << 31) | (source->id & 0x3fffffff);
-		} else {
-			tmp = (source->id & 0xfff) << 18;
-		}
-		if (source->rtr)
-			tmp |= (1 << 30);
-		dest->head[0] = tmp;
-		dest->head[1] = source->len << 28;
-		for (i = 0; i < source->len; i++)
-			dest->data[i] = source->data[i];
-		source++;	/* straight user buffer */
-		dest =
-		    ((unsigned int)dest >= txmax) ?
-		    (struct grcan_msg *)addr : dest + 1;
-		space_left--;
-	}
-
-	{
-		/* A bus off interrupt may have occured after checking pDev->started */
-		SPIN_IRQFLAGS(oldLevel);
-
-		SPIN_LOCK_IRQ(&pDev->devlock, oldLevel);
-		if (pDev->started == STATE_STARTED) {
-			regs->tx0wr = (unsigned int) dest - addr;
-			regs->tx0ctrl = GRCAN_TXCTRL_ENABLE;
-		} else {
-			DBGC(DBG_STATE, "cancelled due to a BUS OFF error\n");
-			ret = state2err[pDev->started];
-		}
-		SPIN_UNLOCK_IRQ(&pDev->devlock, oldLevel);
-	}
-	return ret;
-}
-
-static int grcan_wait_rxdata(struct grcan_priv *pDev, int min)
+int grcan_wait_rxdata(struct grcan_priv *pDev, int min)
 {
 	unsigned int wp, rp, size, irq;
 	unsigned int irq_trunk, dataavail;
@@ -934,7 +572,7 @@ static int grcan_wait_rxdata(struct grcan_priv *pDev, int min)
  * min must be at least WRAP_AROUND_TX_MSGS less than max buffer capacity
  * (pDev->txbuf_size/GRCAN_MSG_SIZE) for this algo to work.
  */
-static int grcan_wait_txspace(struct grcan_priv *pDev, int min)
+int grcan_wait_txspace(struct grcan_priv *pDev, int min)
 {
 	int wait, state;
 	unsigned int irq, rp, wp, size, space_left;
@@ -1007,7 +645,7 @@ static int grcan_wait_txspace(struct grcan_priv *pDev, int min)
 		return state2err[pDev->started];
 	}
 
-	/* At this point the TxIRQ has been masked, we ned not to mask it */
+	/* At this point the TxIRQ has been masked, we need not to mask it */
 	return 0;
 }
 
@@ -1211,6 +849,7 @@ void *grcan_open(int dev_no)
 	struct grcan_priv *pDev;
 	void *ret;
 	union drvmgr_key_value *value;
+	struct grlib_canbtrs_ranges *br;
 
 	FUNCDBG();
 
@@ -1282,7 +921,13 @@ void *grcan_open(int dev_no)
 	pDev->sfilter.code = 0x00000000;
 
 	/* Calculate default timing register values */
-	grcan_calc_timing(GRCAN_DEFAULT_BAUD,pDev->corefreq_hz,GRCAN_SAMPLING_POINT,&pDev->config.timing);
+	if (pDev->fd_capable)
+		br = &grcanfd_nom_btrs_ranges;
+	else
+		br = &grcan_btrs_ranges;
+	grlib_canbtrs_calc_timing(
+		GRCAN_DEFAULT_BAUD, pDev->corefreq_hz, GRCAN_SAMPLING_POINT,
+		br, (struct grlib_canbtrs_timing *)&pDev->config.timing);
 
 	if ( grcan_alloc_buffers(pDev,1,1) ) {
 		ret = NULL;
@@ -1316,174 +961,11 @@ int grcan_close(void *d)
 	return 0;
 }
 
-int grcan_read(void *d, CANMsg *msg, size_t ucount)
+int grcan_canfd_capable(void *d)
 {
 	struct grcan_priv *pDev = d;
-	CANMsg *dest;
-	unsigned int count, left;
-	int nread;
-	int req_cnt;
 
-	FUNCDBG();
-
-	dest = msg;
-	req_cnt = ucount;
-
-	if ( (!dest) || (req_cnt<1) )
-		return GRCAN_RET_INVARG;
-
-	if (pDev->started != STATE_STARTED) {
-		return GRCAN_RET_NOTSTARTED;
-	}
-
-	DBGC(DBG_RX, "grcan_read [%p]: buf: %p len: %u\n", d, msg, (unsigned int) ucount);
-
-	nread = grcan_hw_read_try(pDev,pDev->regs,dest,req_cnt);
-	if (nread < 0) {
-		return nread;
-	}
-	count = nread;
-	if ( !( pDev->rxblock && pDev->rxcomplete && (count!=req_cnt) ) ){
-		if ( count > 0 ) {
-			/* Successfully received messages (at least one) */
-			return count;
-		}
-
-		/* nothing read, shall we block? */
-		if ( !pDev->rxblock ) {
-			/* non-blocking mode */
-			return GRCAN_RET_TIMEOUT;
-		}
-	}
-
-	while (count == 0 || (pDev->rxcomplete && (count!=req_cnt))) {
-		if (!pDev->rxcomplete) {
-			left = 1; /* return as soon as there is one message available */
-		} else {
-			left = req_cnt - count;     /* return as soon as all data are available */
-
-			/* never wait for more than the half the maximum size of the receive buffer 
-			 * Why? We need some time to copy buffer before to catch up with hw,
-			 * otherwise we would have to copy everything when the data has been
-			 * received.
-			 */
-			if (left > ((pDev->rxbuf_size/GRCAN_MSG_SIZE) / 2)){
-				left = (pDev->rxbuf_size/GRCAN_MSG_SIZE) / 2;
-			}
-		}
-
-		nread = grcan_wait_rxdata(pDev, left);
-		if (nread) {
-			/* The wait has been aborted, probably due to 
-			 * the device driver has been closed by another
-			 * thread or a bus-off. Return error code.
-			 */
-			return nread;
-		}
-
-		/* Try read bytes from circular buffer */
-		nread = grcan_hw_read_try(
-				pDev,
-				pDev->regs,
-				dest+count,
-				req_cnt-count);
-
-		if (nread < 0) {
-			/* The read was aborted by bus-off. */
-			return nread;
-		}
-		count += nread;
-	}
-	/* no need to unmask IRQ as IRQ Handler do that for us. */
-	return count;
-}
-
-int grcan_write(void *d, CANMsg *msg, size_t ucount)
-{
-	struct grcan_priv *pDev = d;
-	CANMsg *source;
-	unsigned int count, left;
-	int nwritten;
-	int req_cnt;
-
-	DBGC(DBG_TX,"\n");
-
-	if ((pDev->started != STATE_STARTED) || pDev->config.silent || pDev->flushing)
-		return GRCAN_RET_NOTSTARTED;
-
-	req_cnt = ucount;
-	source = (CANMsg *) msg;
-
-	/* check proper length and buffer pointer */
-	if (( req_cnt < 1) || (source == NULL) ){
-		return GRCAN_RET_INVARG;
-	}
-
-	nwritten = grcan_hw_write_try(pDev,pDev->regs,source,req_cnt);
-	if (nwritten < 0) {
-		return nwritten;
-	}
-	count = nwritten;
-	if ( !(pDev->txblock && pDev->txcomplete && (count!=req_cnt)) ) {
-		if ( count > 0 ) {
-			/* Successfully transmitted chars (at least one char) */
-			return count;
-		}
-
-		/* nothing written, shall we block? */
-		if ( !pDev->txblock ) {
-			/* non-blocking mode */
-			return GRCAN_RET_TIMEOUT;
-		}
-	}
-
-	/* if in txcomplete mode we need to transmit all chars */
-	while((count == 0) || (pDev->txcomplete && (count!=req_cnt)) ){
-		/*** block until room to fit all or as much of transmit buffer as possible
-		 * IRQ comes. Set up a valid IRQ point so that an IRQ is received 
-		 * when we can put a chunk of data into transmit fifo
-		 */
-		if ( !pDev->txcomplete ){
-			left = 1; /* wait for anything to fit buffer */
-		}else{
-			left = req_cnt - count; /* wait for all data to fit in buffer */
-
-			/* never wait for more than the half the maximum size of the transmit
-			 * buffer 
-			 * Why? We need some time to fill buffer before hw catches up.
-			 */
-			if ( left > ((pDev->txbuf_size/GRCAN_MSG_SIZE)/2) ){
-				left = (pDev->txbuf_size/GRCAN_MSG_SIZE)/2;
-			}
-		}
-
-		nwritten = grcan_wait_txspace(pDev,left);
-		/* Wait until more room in transmit buffer */
-		if ( nwritten ) {
-			/* The wait has been aborted, probably due to 
-			 * the device driver has been closed by another
-			 * thread. To avoid deadlock we return directly
-			 * with error status.
-			 */
-			return nwritten;
-		}
-
-		/* Try read bytes from circular buffer */
-		nwritten = grcan_hw_write_try(
-			pDev,
-			pDev->regs,
-			source+count,
-			req_cnt-count);
-
-		if (nwritten < 0) {
-			/* Write was aborted by bus-off. */
-			return nwritten;
-		}
-		count += nwritten;
-	}
-	/* no need to unmask IRQ as IRQ Handler do that for us. */
-
-	return count;
+	return pDev->fd_capable;
 }
 
 int grcan_start(void *d)
@@ -1708,51 +1190,6 @@ int grcan_clr_stats(void *d)
 	SPIN_LOCK_IRQ(&pDev->devlock, oldLevel);
 	memset(&pDev->stats,0,sizeof(struct grcan_stats));
 	SPIN_UNLOCK_IRQ(&pDev->devlock, oldLevel);
-
-	return 0;
-}
-
-int grcan_set_speed(void *d, unsigned int speed)
-{
-	struct grcan_priv *pDev = d;
-	struct grcan_timing timing;
-	int ret;
-
-	FUNCDBG();
-
-	/* cannot change speed during run mode */
-	if (pDev->started == STATE_STARTED)
-		return -1;
-
-	/* get speed rate from argument */
-	ret = grcan_calc_timing(speed, pDev->corefreq_hz, GRCAN_SAMPLING_POINT, &timing);
-	if ( ret )
-		return -2;
-
-	/* save timing/speed */
-	pDev->config.timing = timing;
-	pDev->config_changed = 1;
-
-	return 0;
-}
-
-int grcan_set_btrs(void *d, const struct grcan_timing *timing)
-{
-	struct grcan_priv *pDev = d;
-
-	FUNCDBG();
-
-	/* Set BTR registers manually
-	 * Read GRCAN/HurriCANe Manual.
-	 */
-	if (pDev->started == STATE_STARTED)
-		return -1;
-
-	if ( !timing )
-		return -2;
-
-	pDev->config.timing = *timing;
-	pDev->config_changed = 1;
 
 	return 0;
 }

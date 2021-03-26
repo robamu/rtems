@@ -381,19 +381,6 @@ SECTIONS {
 	bsp_section_nocacheheap_size = bsp_section_nocacheheap_end - bsp_section_nocacheheap_begin;
 	bsp_section_nocachenoload_size = bsp_section_nocachenoload_end - bsp_section_nocachenoload_begin;
 
-	/* Not an ideal solution but required for lwIP on the STM32H7 BSP.
-	This places the DMA descriptors for lwIP at the start of SRAM3.
-	The MPU still needs to be configured for the DMA descriptor regions to be
-	bufferable, non-cacheable, non-shareable (first 256 bytes) */
-	.lwip_sec_stm32h7 (NOLOAD) : ALIGN_WITH_INPUT {
-		. = ABSOLUTE(0x30040000);
-		*(.RxDecripSection)
-		. = ABSOLUTE(0x30040060);
-		*(.TxDecripSection)
-		. = ABSOLUTE(0x30040200);
-		*(.RxArraySection)
-	} >SRAM_3 AT> REGION_TEXT_LOAD
-
 	/* FIXME */
 	RamBase = ORIGIN (REGION_WORK);
 	RamSize = LENGTH (REGION_WORK);

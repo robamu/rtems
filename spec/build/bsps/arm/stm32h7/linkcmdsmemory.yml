@@ -82,6 +82,13 @@ content: |
   stm32h7_memory_sdram_2_begin = ORIGIN (SDRAM_2);
   stm32h7_memory_sdram_2_end = ORIGIN (SDRAM_2) + LENGTH (SDRAM_2);
   stm32h7_memory_sdram_2_size = LENGTH (SDRAM_2);
+
+  SECTIONS {
+    .stm32h7_sram_3 (NOLOAD) : ALIGN_WITH_INPUT {
+      bsp_stm32h7_sram_3_start = stm32h7_memory_sram_3_begin;
+      bsp_stm32h7_sram_3_end = stm32h7_memory_sram_3_end;
+    } > SRAM_3 AT > FLASH
+  }
 enabled-by: true
 install-path: ${BSP_LIBDIR}
 links: []

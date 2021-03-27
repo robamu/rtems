@@ -54,6 +54,7 @@ static void init_power(void)
 static void init_oscillator(void)
 {
   HAL_StatusTypeDef status;
+
   status = HAL_RCC_OscConfig(&stm32h7_config_oscillator);
   if (status != HAL_OK) {
     bsp_reset();

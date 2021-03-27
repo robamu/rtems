@@ -48,16 +48,10 @@
 #include "stm32h7xx.h"
 #include <math.h>
 #ifdef __rtems__
-#include <bspopts.h>
 #include <bsp/linker-symbols.h>
 #endif /* __rtems__ */
-
 #if !defined  (HSE_VALUE)
-  #if STM32H743ZI_NUCLEO == 1
-    #define HSE_VALUE    ((uint32_t)8000000) /*!< Value of the External oscillator in Hz */
-  #else
-    #define HSE_VALUE    ((uint32_t)25000000) /*!< Value of the External oscillator in Hz */
-  #endif /* STM32H743ZI_NUCLEO == 1 */
+#define HSE_VALUE    ((uint32_t)25000000) /*!< Value of the External oscillator in Hz */
 #endif /* HSE_VALUE */
 
 #if !defined  (CSI_VALUE)

@@ -12,6 +12,3 @@ Makefile.in
 /testsuites/build/build
 /testsuites/build/wscript
 .waf*
-
-.project
-waf3-*

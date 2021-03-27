@@ -51,7 +51,6 @@ static void init_power(void)
   }
 }
 
-void init_oscillator(void) __attribute__((weak));
 void init_oscillator(void)
 {
   HAL_StatusTypeDef status;

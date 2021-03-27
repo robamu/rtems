@@ -64,8 +64,7 @@ static const stm32h7_gpio_config gpioa = {
   }
 };
 
-void
-HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
+void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
 {
   stm32h7_clk_enable(STM32H7_MODULE_ETH1MAC);
   stm32h7_clk_enable(STM32H7_MODULE_ETH1TX);

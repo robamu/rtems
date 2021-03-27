@@ -1,0 +1,24 @@
+actions:
+- get-boolean: null
+- env-assign: null
+- define-condition: null
+build-type: option
+default: false
+default-by-variant: []
+enabled-by: true
+format: '{}'
+links: []
+name: STM32H7_ADD_LWIP
+description: |
+  This changes the code to allow lwIP to work properly based on the STM32 lwIP example.
+  The user must take care of the following steps in the application:
+   1. The lwIP DMA descriptors have to be placed into the .bsp_no_cache section instead
+      of custom sections
+   2. The sections need to be aligned to 32 bytes (0x20) boundaries
+  This can be achieved by appending
+    __attribute__((section(.bsp_no_cache),__aligned__(0x20)));
+  to the descriptor definitions.
+type: build
+SPDX-License-Identifier: CC-BY-SA-4.0 OR BSD-2-Clause
+copyrights:
+- Copyright (C) 2020 Robin Mueller

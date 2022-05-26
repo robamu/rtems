@@ -3,6 +3,7 @@ actions:
 - define-unquoted: null
 build-type: option
 default: null
+default-by-family: []
 default-by-variant:
 - value: GPIO_PIN_13
   variants:
